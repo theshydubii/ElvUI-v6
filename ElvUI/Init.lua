@@ -45,6 +45,7 @@ local gameSettingsScaleOptions = {
 	{frame = "CharacterFrame", key = "characterInfo", name = "Character Info", group = "characters"},
 	{frame = "SpellBookFrame", key = "spellBook", name = "Spell Book", group = "characters"},
 	{frame = "InspectFrame", key = "inspect", name = "Inspect", group = "characters"},
+	{frame = "DressUpFrame", key = "dressingRoom", name = "Dressing Room", group = "characters"},
 	{frame = "FriendsFrame", key = "social", name = "Social", group = "characters"},
 	{frame = "PVPFrame", key = "pvp", name = "Player vs. Player", group = "characters"},
 	{frame = "LFDParentFrame", key = "groupFinder", name = "Group Finder", group = "characters"}
@@ -92,6 +93,28 @@ end
 
 hooksecurefunc(GameTooltip, "SetOwner", UpdateGameTooltipScale)
 
+local function UpdateUIPanelScaleWidth(frame, scale)
+	if not frame.GetAttribute or not UpdateUIPanelPositions then return end
+
+	local attribute = "UIPanelLayout-width"
+	local currentWidth = frame:GetAttribute(attribute)
+	if type(currentWidth) ~= "number" then return end
+
+	local baseWidth = frame.ElvUIBaseUIPanelWidth
+	local lastWidth = frame.ElvUIScaledUIPanelWidth
+	if not baseWidth or (lastWidth and currentWidth ~= lastWidth) then
+		baseWidth = currentWidth
+		frame.ElvUIBaseUIPanelWidth = baseWidth
+	end
+
+	local scaledWidth = baseWidth * scale
+	if currentWidth ~= scaledWidth and frame:CanChangeAttribute() then
+		frame:SetAttribute(attribute, scaledWidth)
+		frame.ElvUIScaledUIPanelWidth = scaledWidth
+		UpdateUIPanelPositions(frame)
+	end
+end
+
 local function ScaleGameSettingsFrame(frame)
 	local frameName = frame and frame:GetName()
 	if frameName and gameSettingsFrameNames[frameName] then
@@ -102,6 +125,14 @@ local function ScaleGameSettingsFrame(frame)
 			scale = settings[option.scaleKey] or scale
 		end
 		frame:SetScale(scale)
+		if frameName == "InspectFrame" or frameName == "DressUpFrame" then
+			local area = frameName == "InspectFrame" and "left" or "right"
+			if frame:GetAttribute("UIPanelLayout-area") ~= area and frame:CanChangeAttribute() then
+				frame:SetAttribute("UIPanelLayout-area", area)
+				UpdateUIPanelPositions(frame)
+			end
+		end
+		UpdateUIPanelScaleWidth(frame, scale)
 		UpdateGameTooltipScale()
 	end
 end
