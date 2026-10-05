@@ -749,6 +749,53 @@ local function GetOptionsTable_Auras(auraType, updateFunc, groupName, numUnits)
 		name = L["Use drag and drop to rearrange filter priority or right click to remove a filter."].."\n"..L["Use Shift+LeftClick to toggle between friendly or enemy or normal state. Normal state will allow the filter to be checked on all units. Friendly state is for friendly units only and enemy state is for enemy units."],
 	}
 
+	if groupName == "target" and auraType == "debuffs" then
+		config.args.filters.args.customTargetPriority = {
+			order = 24,
+			type = "group",
+			name = L["Target Debuff Priority"],
+			guiInline = true,
+			get = function(info) return E.db.unitframe.units.target.debuffs[info[#info]] end,
+			set = function(info, value)
+				E.db.unitframe.units.target.debuffs[info[#info]] = value
+				updateFunc(UF, groupName, numUnits)
+			end,
+			args = {
+				customPriorityEnabled = {
+					order = 1,
+					type = "toggle",
+					name = L["Enable Custom Priorities"],
+					desc = L["Prioritize your own debuffs, then listed spells, then debuffs from the listed classes. When disabled, the existing filters and sorting are used."],
+				},
+				customPriorityMode = {
+					order = 2,
+					type = "select",
+					name = L["Debuff Filter Mode"],
+					disabled = function() return not E.db.unitframe.units.target.debuffs.customPriorityEnabled end,
+					values = {
+						DEFAULT = L["Default"],
+						ONLY_SPELLS = L["Only Listed Spells"],
+						ONLY_SPELLS_AND_PERSONAL = L["Only Listed Spells and My Debuffs"],
+					},
+				},
+				spellPriority = {
+					order = 3,
+					type = "input",
+					name = L["Spell Priority (Spell IDs)"],
+					desc = L["Enter spell IDs separated by commas, in priority order."],
+					disabled = function() return not E.db.unitframe.units.target.debuffs.customPriorityEnabled end,
+				},
+				classPriority = {
+					order = 4,
+					type = "input",
+					name = L["Class Priority"],
+					desc = L["Enter class tokens separated by commas, in priority order (for example: PALADIN,WARRIOR,PRIEST)."],
+					disabled = function() return not E.db.unitframe.units.target.debuffs.customPriorityEnabled end,
+				},
+			},
+		}
+	end
+
 	return config
 end
 

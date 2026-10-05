@@ -688,6 +688,141 @@ E.Options.args.general = {
 								E.db.CustomTweaks.RaidControl.transparent = value
 								E:GetModule("RaidUtility"):UpdateCustomRaidControl()
 							end
+						},
+						orientation = {
+							order = 4,
+							type = "select",
+							name = L["Orientation"],
+							disabled = function() return not E.private.general.raidUtility end,
+							get = function() return E.db.CustomTweaks.RaidControl.orientation end,
+							set = function(_, value)
+								E.db.CustomTweaks.RaidControl.orientation = value
+								E:GetModule("RaidUtility"):UpdateCustomRaidControl()
+							end,
+							values = {
+								VERTICAL = L["Vertical"],
+								HORIZONTAL = L["Horizontal"]
+							}
+						},
+						anchor = {
+							order = 5,
+							type = "select",
+							name = L["Attach To"],
+							desc = L["Choose a screen edge or frame to anchor Raid Control to. Choose Free to position it with the Toggle Anchors mover."],
+							disabled = function() return not E.private.general.raidUtility end,
+							get = function() return E.db.CustomTweaks.RaidControl.anchor end,
+							set = function(_, value)
+								E.db.CustomTweaks.RaidControl.anchor = value
+								E:GetModule("RaidUtility"):UpdateCustomRaidControl()
+							end,
+							values = {
+								FREE = L["Free (Mover)"],
+								SCREEN = L["Screen Edge"],
+								MINIMAP = L["Minimap"],
+								ACTIONBAR1 = L["Action Bar 1"],
+								ACTIONBAR2 = L["Action Bar 2"],
+								ACTIONBAR3 = L["Action Bar 3"],
+								ACTIONBAR4 = L["Action Bar 4"],
+								ACTIONBAR5 = L["Action Bar 5"],
+								ACTIONBAR6 = L["Action Bar 6"],
+								ACTIONBAR7 = L["Action Bar 7"],
+								ACTIONBAR8 = L["Action Bar 8"],
+								ACTIONBAR9 = L["Action Bar 9"],
+								ACTIONBAR10 = L["Action Bar 10"],
+								PLAYER = L["Player Frame"],
+								FOCUS = L["Focus Frame"],
+								TARGET = L["Target Frame"]
+							}
+						},
+						anchorSide = {
+							order = 6,
+							type = "select",
+							name = L["Anchor Side"],
+							desc = L["Sets which side of the attached frame or screen edge the launcher is placed on."],
+							disabled = function() return not E.private.general.raidUtility end,
+							get = function() return E.db.CustomTweaks.RaidControl.anchorSide end,
+							set = function(_, value)
+								E.db.CustomTweaks.RaidControl.anchorSide = value
+								E:GetModule("RaidUtility"):UpdateCustomRaidControl()
+							end,
+							values = {
+								TOP = L["Top"],
+								BOTTOM = L["Bottom"],
+								LEFT = L["Left"],
+								RIGHT = L["Right"]
+							}
+						},
+						openDirection = {
+							order = 7,
+							type = "select",
+							name = L["Panel Expansion"],
+							desc = L["Choose whether the Raid Control panel expands upward or downward from its launcher."],
+							disabled = function() return not E.private.general.raidUtility end,
+							get = function()
+								local direction = E.db.CustomTweaks.RaidControl.openDirection
+								if direction then return direction end
+								return E.db.CustomTweaks.RaidControl.anchorSide == "BOTTOM" and "UP" or "DOWN"
+							end,
+							set = function(_, value)
+								E.db.CustomTweaks.RaidControl.openDirection = value
+								E:GetModule("RaidUtility"):UpdateCustomRaidControl()
+							end,
+							values = {
+								UP = L["Up"],
+								DOWN = L["Down"]
+							}
+						},
+						width = {
+							order = 9,
+							type = "range",
+							name = L["Panel Width"],
+							desc = L["Sets the panel and button width."],
+							min = 180, max = 500, step = 10,
+							disabled = function() return not E.private.general.raidUtility end,
+							get = function() return E.db.CustomTweaks.RaidControl.width end,
+							set = function(_, value)
+								E.db.CustomTweaks.RaidControl.width = value
+								E:GetModule("RaidUtility"):UpdateCustomRaidControl()
+							end
+						},
+						scale = {
+							order = 10,
+							type = "range",
+							name = L["Scale"],
+							min = 0.7, max = 1.5, step = 0.05,
+							isPercent = true,
+							disabled = function() return not E.private.general.raidUtility end,
+							get = function() return E.db.CustomTweaks.RaidControl.scale end,
+							set = function(_, value)
+								E.db.CustomTweaks.RaidControl.scale = value
+								E:GetModule("RaidUtility"):UpdateCustomRaidControl()
+							end
+						},
+						spacing = {
+							order = 8,
+							type = "range",
+							name = L["Spacing"],
+							desc = L["Adjusts the gap between Raid Control and its attached frame or screen edge."],
+							min = 0, max = 50, step = 1,
+							disabled = function()
+								return not E.private.general.raidUtility or E.db.CustomTweaks.RaidControl.anchor == "FREE"
+							end,
+							get = function() return E.db.CustomTweaks.RaidControl.spacing end,
+							set = function(_, value)
+								E.db.CustomTweaks.RaidControl.spacing = value
+								E:GetModule("RaidUtility"):UpdateCustomRaidControl()
+							end
+						},
+						showTooltip = {
+							order = 11,
+							type = "toggle",
+							name = L["Tooltip"],
+							desc = L["Display a tooltip when hovering over raid markers."],
+							disabled = function() return not E.private.general.raidUtility end,
+							get = function() return E.db.CustomTweaks.RaidControl.showTooltip end,
+							set = function(_, value)
+								E.db.CustomTweaks.RaidControl.showTooltip = value
+							end
 						}
 					}
 				},

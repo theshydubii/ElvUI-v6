@@ -124,10 +124,10 @@ function lib:RegisterPlugin(name, callback, isLib, libVersion)
 	lib.plugins[name] = plugin
 
 	if not lib.registeredPrefix and E.global.general.versionCheck then
-		lib.VCFrame:RegisterEvent("CHAT_MSG_ADDON")
-		lib.VCFrame:RegisterEvent("RAID_ROSTER_UPDATE")
-		lib.VCFrame:RegisterEvent("PARTY_MEMBERS_CHANGED")
-		lib.VCFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+		-- lib.VCFrame:RegisterEvent("CHAT_MSG_ADDON")
+		-- lib.VCFrame:RegisterEvent("RAID_ROSTER_UPDATE")
+		-- lib.VCFrame:RegisterEvent("PARTY_MEMBERS_CHANGED")
+		-- lib.VCFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 		lib.registeredPrefix = true
 	end
 

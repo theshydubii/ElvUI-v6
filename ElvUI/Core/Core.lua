@@ -848,12 +848,12 @@ do
 		end
 	end
 
-	local f = CreateFrame("Frame")
-	f:RegisterEvent("CHAT_MSG_ADDON")
-	f:RegisterEvent("RAID_ROSTER_UPDATE")
-	f:RegisterEvent("PARTY_MEMBERS_CHANGED")
-	f:RegisterEvent("PLAYER_ENTERING_WORLD")
-	f:SetScript("OnEvent", SendRecieve)
+	-- local f = CreateFrame("Frame")
+	-- f:RegisterEvent("CHAT_MSG_ADDON")
+	-- f:RegisterEvent("RAID_ROSTER_UPDATE")
+	-- f:RegisterEvent("PARTY_MEMBERS_CHANGED")
+	-- f:RegisterEvent("PLAYER_ENTERING_WORLD")
+	-- f:SetScript("OnEvent", SendRecieve)
 end
 
 function E:UpdateAll(ignoreInstall)

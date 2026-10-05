@@ -1303,7 +1303,17 @@ P.CustomTweaks = {
 	BagButtons = {stackButton = false, style = "ICON", buttonColor = {r = 0.3, g = 0.3, b = 0.3}},
 	ChatMaxLines = {MaxLines = 128},
 	BagsTextFormat = {textFormat = "USED_TOTAL"},
-	RaidControl = {hide = false, transparent = true},
+	RaidControl = {
+		hide = false,
+		transparent = true,
+		orientation = "VERTICAL",
+		anchor = "FREE",
+		anchorSide = "TOP",
+		spacing = 5,
+		width = 230,
+		scale = 1,
+		showTooltip = true
+	},
 	AuraIconSpacing = {spacing = 1, units = {}},
 	CastbarText = {},
 	PowerBarTexture = {powerstatusbar = "ElvUI Norm"},
@@ -1850,6 +1860,10 @@ P.unitframe = {
 				minDuration = 0,
 				maxDuration = 300,
 				priority = "Blacklist,Personal,RaidDebuffs,CCDebuffs,Friendly:Dispellable", --Target Debuffs
+				customPriorityEnabled = true,
+				customPriorityMode = "DEFAULT",
+				classPriority = "",
+				spellPriority = "",
 				xOffset = 0,
 				yOffset = 0
 			},
@@ -4356,6 +4370,15 @@ P.actionbar = {
 		buttonSpacing = 2,
 		alpha = 1,
 		visibility = "show"
+	},
+	raidmarkers = {
+		enabled = false,
+		mouseover = false,
+		buttonSize = 24,
+		buttonsPerRow = 9,
+		buttonSpacing = 2,
+		orientation = "HORIZONTAL",
+		sort = "ASCENDING"
 	},
 	bar1 = {
 		enabled = true,

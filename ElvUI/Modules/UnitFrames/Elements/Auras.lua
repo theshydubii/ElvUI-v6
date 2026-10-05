@@ -13,8 +13,36 @@ local IsShiftKeyDown = IsShiftKeyDown
 local IsAltKeyDown = IsAltKeyDown
 local IsControlKeyDown = IsControlKeyDown
 local UnitCanAttack = UnitCanAttack
+local UnitClass = UnitClass
 local UnitIsFriend = UnitIsFriend
 local UnitIsUnit = UnitIsUnit
+
+local function ParsePriorityList(priority, numeric)
+	local priorities = {}
+	local rank = 0
+	for value in (priority or ""):gmatch("[^,%s]+") do
+		if numeric then
+			value = tonumber(value)
+		else
+			value = value:upper()
+		end
+
+		if value and not priorities[value] then
+			rank = rank + 1
+			priorities[value] = rank
+		end
+	end
+
+	return priorities
+end
+
+local function IsAuraBlacklisted(spellID, name)
+	local filters = E.global.unitframe and E.global.unitframe.aurafilters
+	local blacklist = filters and filters.Blacklist
+	local spells = blacklist and blacklist.spells
+	local spell = spells and (spells[spellID] or spells[name])
+	return spell and spell.enable
+end
 
 function UF:Construct_Buffs(frame)
 	local buffs = CreateFrame("Frame", frame:GetName().."Buffs", frame)
@@ -141,6 +169,11 @@ function UF:Configure_Auras(frame, auraType)
 	local auras = frame[auraType]
 	auraType = string.lower(auraType)
 	auras.db = db[auraType]
+	auras.targetDebuffPriority = frame.unitframeType == "target" and auraType == "debuffs" and auras.db.customPriorityEnabled
+	if auras.targetDebuffPriority then
+		auras.targetSpellPriority = ParsePriorityList(auras.db.spellPriority, true)
+		auras.targetClassPriority = ParsePriorityList(auras.db.classPriority, false)
+	end
 
 	local customSpacing = E.private.CustomTweaks.AuraIconSpacing and E.db.CustomTweaks.AuraIconSpacing
 	if customSpacing and customSpacing.units[frame.unitframeType] then
@@ -267,7 +300,40 @@ function UF:Configure_Auras(frame, auraType)
 	end
 end
 
+local function CompareTargetAuraPriority(a, b)
+	local auras = a and a:GetParent()
+	if not auras or not auras.targetDebuffPriority or not b or b:GetParent() ~= auras then return end
+
+	if a:IsShown() ~= b:IsShown() then
+		return a:IsShown()
+	end
+	if not a:IsShown() then return end
+
+	if a.isPlayer ~= b.isPlayer then
+		return a.isPlayer
+	end
+
+	local aSpell, bSpell = a.targetSpellPriority or math.huge, b.targetSpellPriority or math.huge
+	if aSpell ~= bSpell then
+		return aSpell < bSpell
+	end
+
+	local aClass, bClass = a.targetClassPriority or math.huge, b.targetClassPriority or math.huge
+	if aClass ~= bClass then
+		return aClass < bClass
+	end
+end
+
+local function SortAurasByTargetPriority(a, b)
+	local priority = CompareTargetAuraPriority(a, b)
+	if priority ~= nil then return priority end
+	return a:GetID() < b:GetID()
+end
+
 local function SortAurasByTime(a, b)
+	local priority = CompareTargetAuraPriority(a, b)
+	if priority ~= nil then return priority end
+
 	if a and b and a:GetParent().db then
 		if a:IsShown() and b:IsShown() then
 			local sortDirection = a:GetParent().db.sortDirection
@@ -287,6 +353,9 @@ local function SortAurasByTime(a, b)
 end
 
 local function SortAurasByName(a, b)
+	local priority = CompareTargetAuraPriority(a, b)
+	if priority ~= nil then return priority end
+
 	if a and b and a:GetParent().db then
 		if a:IsShown() and b:IsShown() then
 			local sortDirection = a:GetParent().db.sortDirection
@@ -306,6 +375,9 @@ local function SortAurasByName(a, b)
 end
 
 local function SortAurasByDuration(a, b)
+	local priority = CompareTargetAuraPriority(a, b)
+	if priority ~= nil then return priority end
+
 	if a and b and a:GetParent().db then
 		if a:IsShown() and b:IsShown() then
 			local sortDirection = a:GetParent().db.sortDirection
@@ -325,6 +397,9 @@ local function SortAurasByDuration(a, b)
 end
 
 local function SortAurasByCaster(a, b)
+	local priority = CompareTargetAuraPriority(a, b)
+	if priority ~= nil then return priority end
+
 	if a and b and a:GetParent().db then
 		if a:IsShown() and b:IsShown() then
 			local sortDirection = a:GetParent().db.sortDirection
@@ -353,6 +428,8 @@ function UF:SortAuras()
 		sort(self, SortAurasByDuration)
 	elseif self.db.sortMethod == "PLAYER" then
 		sort(self, SortAurasByCaster)
+	elseif self.targetDebuffPriority then
+		sort(self, SortAurasByTargetPriority)
 	end
 
 	--Look into possibly applying filter priorities for auras here.
@@ -398,6 +475,13 @@ function UF:AuraFilter(unit, button, name, _, _, _, debuffType, duration, expira
 
 	local isPlayer = (caster == "player" or caster == "vehicle")
 	local isFriend = unit and UnitIsFriend("player", unit) and not UnitCanAttack("player", unit)
+	local customPriority = self.type == "debuffs" and parent.unitframeType == "target" and db.customPriorityEnabled
+	local targetSpellPriority = customPriority and self.targetSpellPriority[tonumber(spellID)]
+	local classPriority
+	if customPriority and caster then
+		local _, class = UnitClass(caster)
+		classPriority = class and self.targetClassPriority[class:upper()]
+	end
 
 	button.isPlayer = isPlayer
 	button.isFriend = isFriend
@@ -410,10 +494,21 @@ function UF:AuraFilter(unit, button, name, _, _, _, debuffType, duration, expira
 	button.owner = caster --what uses this?
 	button.spell = name --what uses this? (SortAurasByName?)
 	button.priority = 0
+	button.targetSpellPriority = targetSpellPriority
+	button.targetClassPriority = classPriority
 
 	local noDuration = (not duration or duration == 0)
 	local allowDuration = noDuration or (duration and (duration > 0) and (db.maxDuration == 0 or duration <= db.maxDuration) and (db.minDuration == 0 or duration >= db.minDuration))
 	local filterCheck, spellPriority
+
+	if customPriority then
+		local mode = db.customPriorityMode
+		if isPlayer then
+			return mode ~= "ONLY_SPELLS"
+		elseif mode == "ONLY_SPELLS" or mode == "ONLY_SPELLS_AND_PERSONAL" then
+			return targetSpellPriority ~= nil and not IsAuraBlacklisted(spellID, name)
+		end
+	end
 
 	if db.priority ~= "" then
 		local isUnit = unit and caster and UnitIsUnit(unit, caster)
@@ -422,6 +517,12 @@ function UF:AuraFilter(unit, button, name, _, _, _, debuffType, duration, expira
 		if spellPriority then button.priority = spellPriority end -- this is the only difference from auarbars code
 	else
 		filterCheck = allowDuration and true -- Allow all auras to be shown when the filter list is empty, while obeying duration sliders
+	end
+
+	if customPriority then
+		if filterCheck == false then return false end
+		if (targetSpellPriority or classPriority) and allowDuration then return true end
+		if filterCheck == nil and allowDuration then return true end
 	end
 
 	return filterCheck
