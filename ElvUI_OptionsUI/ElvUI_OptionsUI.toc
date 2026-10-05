@@ -1,6 +1,6 @@
 ## Interface: 30300
 ## Author: Elv, Bunny, theshydubii
-## Version: 1.0
+## Version: 1.07
 ## Title: |cff6d28d9E|cff7c3aedl|cff8b5cf6v|cffa78bfaU|cffc4b5fdI|r |cffe5e3e3OptionsUI|r
 ## Notes: Options for ElvUI.
 ## RequiredDeps: ElvUI
