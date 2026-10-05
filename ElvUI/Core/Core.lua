@@ -36,6 +36,7 @@ local tonumber, pairs, ipairs, error, unpack, select, tostring = tonumber, pairs
 local assert, type, print = assert, type, print
 local twipe, tinsert, tremove, next = table.wipe, tinsert, tremove, next
 local format, find, match, strrep, strlen, sub, gsub, strjoin = string.format, string.find, string.match, strrep, strlen, string.sub, string.gsub, strjoin
+local gmatch = string.gmatch
 --WoW API / Variables
 local CreateFrame = CreateFrame
 local GetAddOnInfo = GetAddOnInfo
@@ -767,6 +768,33 @@ do
 	local SendMessageWaiting
 	local SendRecieveGroupSize = 0
 
+	local function IsVersionNewer(version, currentVersion)
+		local function GetParts(value)
+			if type(value) ~= "string" then value = tostring(value) end
+
+			local parts, rawParts = {}, {}
+			for part in gmatch(value, "%d+") do
+				tinsert(parts, tonumber(part))
+				tinsert(rawParts, part)
+			end
+
+			if #parts == 0 or table.concat(rawParts, ".") ~= value then return nil end
+			return parts
+		end
+
+		local newParts, currentParts = GetParts(version), GetParts(currentVersion)
+		if not newParts or not currentParts then return false end
+
+		for index = 1, math.max(#newParts, #currentParts) do
+			local newPart, currentPart = newParts[index] or 0, currentParts[index] or 0
+			if newPart ~= currentPart then
+				return newPart > currentPart
+			end
+		end
+
+		return false
+	end
+
 	function E:SendMessage()
 		if GetNumRaidMembers() > 1 then
 			local _, instanceType = IsInInstance()
@@ -789,15 +817,14 @@ do
 			if prefix ~= "ELVUI_VERSIONCHK" then return end
 			if not sender or sender == E.myname then return end
 
-			local ver = tonumber(E.version)
-			message = tonumber(message)
-
-			if message and (message > ver) then
+			if IsVersionNewer(message, E.version) then
 				if not E.recievedOutOfDateMessage then
-					-- E:Print(gsub(L["ElvUI is out of date. You can download the newest version from https://github.com/ElvUI-WotLK/ElvUI"], "https://github.com/ElvUI%-WotLK/ElvUI", "https://github.com/theshydubii/ElvUI"))
+					local updateMessage = gsub(L["ElvUI is out of date. You can download the newest version from https://github.com/ElvUI-WotLK/ElvUI"], "https://github.com/ElvUI%-WotLK/ElvUI", "https://github.com/theshydubii/ElvUI")
+					E:Print(updateMessage)
 
-					if message and ((message - ver) >= 0.01) and not InCombatLockdown() then
-						-- E:StaticPopup_Show("ELVUI_UPDATE_AVAILABLE")
+					local numericVersion, numericMessage = tonumber(E.version), tonumber(message)
+					if numericVersion and numericMessage and (numericMessage - numericVersion) >= 0.01 and not InCombatLockdown() then
+						E:StaticPopup_Show("ELVUI_UPDATE_AVAILABLE")
 					end
 
 					E.recievedOutOfDateMessage = true

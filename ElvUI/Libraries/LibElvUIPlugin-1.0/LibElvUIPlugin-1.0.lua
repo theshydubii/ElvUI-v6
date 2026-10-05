@@ -215,6 +215,33 @@ do	-- this will handle `8.1.5.0015` into `8.150015` etc
 	end
 end
 
+local function IsVersionNewer(version, currentVersion)
+	local function GetParts(value)
+		if type(value) ~= "string" then value = tostring(value) end
+
+		local parts, rawParts = {}, {}
+		for part in gmatch(value, "%d+") do
+			tinsert(parts, tonumber(part))
+			tinsert(rawParts, part)
+		end
+
+		if #parts == 0 or table.concat(rawParts, ".") ~= value then return nil end
+		return parts
+	end
+
+	local newParts, currentParts = GetParts(version), GetParts(currentVersion)
+	if not newParts or not currentParts then return false end
+
+	for index = 1, math.max(#newParts, #currentParts) do
+		local newPart, currentPart = newParts[index] or 0, currentParts[index] or 0
+		if newPart ~= currentPart then
+			return newPart > currentPart
+		end
+	end
+
+	return false
+end
+
 function lib:VersionCheck(event, prefix, message, _, sender)
 	if (event == "CHAT_MSG_ADDON" and prefix == lib.prefix) and (sender and message and not match(message, "^%s-$")) then
 		if sender == E.myname then return end
@@ -223,8 +250,7 @@ function lib:VersionCheck(event, prefix, message, _, sender)
 			for name, version in gmatch(message, "([^=]+)=([%d%p]+);") do
 				local plugin = (version and name) and lib.plugins[name]
 				if plugin and plugin.version then
-					local Pver, ver = lib:StripVersion(plugin.version), lib:StripVersion(version)
-					if (ver and Pver) and (ver > Pver) then
+					if IsVersionNewer(version, plugin.version) then
 						plugin.old, plugin.newversion = true, version
 						local title = GetAddOnMetadata(plugin.name, "Title") or plugin.name
 						local message = MSG_OUTDATED
@@ -232,7 +258,7 @@ function lib:VersionCheck(event, prefix, message, _, sender)
 						if repository then
 							message = gsub(message, "https://github.com/ElvUI%-WotLK/ElvUI/", repository)
 						end
-						-- E:Print(format(message, title, plugin.version, plugin.newversion))
+						E:Print(format(message, title, plugin.version, plugin.newversion))
 						E.pluginRecievedOutOfDateMessage = true
 					end
 				end
