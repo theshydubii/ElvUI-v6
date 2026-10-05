@@ -43,6 +43,9 @@ S:AddCallback("Skin_PvP", function()
 	PVPTeamDetails:StripTextures()
 	PVPTeamDetails:SetTemplate("Transparent")
 	PVPTeamDetails:Point("TOPLEFT", PVPFrame, "TOPRIGHT", -33, -81)
+	PVPTeamDetails:HookScript("OnShow", function()
+		E:UpdateGameSettingsScale()
+	end)
 
 	S:HandleCloseButton(PVPTeamDetailsCloseButton, PVPTeamDetails)
 

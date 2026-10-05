@@ -47,13 +47,15 @@ local gameSettingsScaleOptions = {
 	{frame = "InspectFrame", key = "inspect", name = "Inspect", group = "characters"},
 	{frame = "DressUpFrame", key = "dressingRoom", name = "Dressing Room", group = "characters"},
 	{frame = "FriendsFrame", key = "social", name = "Social", group = "characters"},
-	{frame = "PVPFrame", key = "pvp", name = "Player vs. Player", group = "characters"},
+	{frame = "PVPParentFrame", key = "pvp", name = "Player vs. Player", group = "characters"},
 	{frame = "LFDParentFrame", key = "groupFinder", name = "Group Finder", group = "characters"}
 }
 AddOn.GameSettingsScaleOptions = gameSettingsScaleOptions
 
 local gameSettingsFrameNames = {
 	GameMenuFrame = true,
+	BattlefieldFrame = true,
+	LFRParentFrame = true,
 }
 local gameSettingsScaleByFrame = {}
 for _, option in ipairs(gameSettingsScaleOptions) do
@@ -62,6 +64,11 @@ for _, option in ipairs(gameSettingsScaleOptions) do
 	option.scaleKey = option.key.."Scale"
 	gameSettingsScaleByFrame[option.frame] = option
 end
+
+gameSettingsScaleByFrame.PVPFrame = gameSettingsScaleByFrame.PVPParentFrame
+gameSettingsScaleByFrame.PVPTeamDetails = gameSettingsScaleByFrame.PVPParentFrame
+gameSettingsScaleByFrame.BattlefieldFrame = gameSettingsScaleByFrame.PVPParentFrame
+gameSettingsScaleByFrame.LFRParentFrame = gameSettingsScaleByFrame.LFDParentFrame
 
 local function GetGameMenuScale()
 	local settings = AddOn.db and AddOn.db.general
@@ -117,16 +124,30 @@ end
 
 local function ScaleGameSettingsFrame(frame)
 	local frameName = frame and frame:GetName()
-	if frameName and gameSettingsFrameNames[frameName] then
+	if frameName and (gameSettingsFrameNames[frameName] or gameSettingsScaleByFrame[frameName]) then
 		local option = gameSettingsScaleByFrame[frameName]
 		local scale = (option and option.group == "characters") and GetCharactersUIScale() or GetGameMenuScale()
 		local settings = AddOn.db and AddOn.db.general
 		if option and settings and settings[option.enabledKey] then
 			scale = settings[option.scaleKey] or scale
 		end
+
+		if frameName == "PVPFrame" then
+			frame = _G.PVPParentFrame or frame
+		end
+
+		if frameName == "PVPTeamDetails" then
+			local parent = frame:GetParent()
+			while parent do
+				if parent == _G.PVPParentFrame then return end
+				parent = parent:GetParent()
+			end
+		end
+
 		frame:SetScale(scale)
-		if frameName == "InspectFrame" or frameName == "DressUpFrame" then
-			local area = frameName == "InspectFrame" and "left" or "right"
+		local scaledFrameName = frame:GetName()
+		if scaledFrameName == "InspectFrame" or scaledFrameName == "DressUpFrame" then
+			local area = scaledFrameName == "InspectFrame" and "left" or "right"
 			if frame:GetAttribute("UIPanelLayout-area") ~= area and frame:CanChangeAttribute() then
 				frame:SetAttribute("UIPanelLayout-area", area)
 				UpdateUIPanelPositions(frame)
@@ -141,6 +162,7 @@ function AddOn:UpdateGameSettingsScale()
 	for frameName in pairs(gameSettingsFrameNames) do
 		ScaleGameSettingsFrame(_G[frameName])
 	end
+	ScaleGameSettingsFrame(_G.PVPTeamDetails)
 end
 
 hooksecurefunc("ShowUIPanel", ScaleGameSettingsFrame)
