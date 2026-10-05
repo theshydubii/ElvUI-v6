@@ -316,6 +316,11 @@ group(8,	"bags",			L["Bags"])
 group(9,	"nameplates",	L["NamePlates"])
 group(10,	"unitframe",	L["UnitFrames"])
 
-E.Options.args.cooldown.order = 2
-E.Options.args.actionbar.args.cooldownText = E.Options.args.cooldown
-E.Options.args.cooldown = nil
+local cooldownOptions = E.Options.args.cooldown
+cooldownOptions.order = 2
+
+local actionbarOptions = E.Options.args.actionbar
+if actionbarOptions then
+	actionbarOptions.args.cooldownText = cooldownOptions
+	E.Options.args.cooldown = nil
+end
