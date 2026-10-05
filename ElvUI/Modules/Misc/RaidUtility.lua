@@ -4,7 +4,7 @@ local S = E:GetModule("Skins")
 local RaidUtilityPanel, RaidUtility_ShowButton
 local DisbandRaidButton, MainTankButton, MainAssistButton
 local ReadyCheckButton, RaidControlButton, ConvertRaidButton
-local CountdownButton, RoleCheckButton, DifficultyButton, RaidTargetIcons, RoleCountText
+local CountdownButton, RoleCheckButton, DifficultyButton, RaidTargetIcons, RoleCountFrame, RoleCountText
 
 --Lua functions
 local format = string.format
@@ -171,9 +171,10 @@ function RU:ApplyRaidControlSettings()
 		end
 	end
 
-	RoleCountText:ClearAllPoints()
-	RoleCountText:SetWidth(contentWidth)
-	RoleCountText:Point("TOP", RaidTargetIcons, "BOTTOM", 0, -BUTTON_SPACING)
+	RoleCountFrame:ClearAllPoints()
+	RoleCountFrame:SetSize(contentWidth, ROLE_ROW_HEIGHT)
+	RoleCountFrame:Point("TOP", RaidTargetIcons, "BOTTOM", 0, -BUTTON_SPACING)
+	RoleCountText:SetAllPoints(RoleCountFrame)
 	self:UpdateRoleCounts()
 	self:UpdateDifficultyButton()
 
@@ -385,7 +386,7 @@ function RU:OnCountdownClick()
 		end
 
 		count = count - 1
-		RU:ScheduleTimer(Countdown, 1)
+		E:ScheduleTimer(Countdown, 1)
 	end
 
 	Countdown()
@@ -613,14 +614,14 @@ function RU:Initialize()
 		S:HandleButton(icon)
 	end
 
-	RoleCountText = RaidUtilityPanel:CreateFontString(nil, "OVERLAY")
+	RoleCountFrame = CreateFrame("Frame", nil, RaidUtilityPanel)
+	RoleCountFrame:EnableMouse(true)
+	RoleCountFrame:SetScript("OnEnter", RU.OnRoleCountEnter)
+	RoleCountFrame:SetScript("OnLeave", RU.OnRoleCountLeave)
+	RoleCountText = RoleCountFrame:CreateFontString(nil, "OVERLAY")
 	RoleCountText:FontTemplate()
 	RoleCountText:SetJustifyH("CENTER")
-	RoleCountText:SetHeight(ROLE_ROW_HEIGHT)
 	RoleCountText:SetTextColor(1, 1, 1)
-	RoleCountText:EnableMouse(true)
-	RoleCountText:SetScript("OnEnter", RU.OnRoleCountEnter)
-	RoleCountText:SetScript("OnLeave", RU.OnRoleCountLeave)
 	RaidUtilityPanel:RegisterEvent("RAID_ROSTER_UPDATE")
 	RaidUtilityPanel:RegisterEvent("PARTY_MEMBERS_CHANGED")
 	RaidUtilityPanel:RegisterEvent("PLAYER_ENTERING_WORLD")

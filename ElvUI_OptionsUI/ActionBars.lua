@@ -1277,19 +1277,19 @@ E.Options.args.actionbar = {
 			disabled = function() return not E.ActionBars.Initialized end
 		},
 		bar2Shortcut = {
-			order = 14 - (shamanOrder + shamanOrder),
+			order = 14 - shamanOrder,
 			type = "execute",
 			name = L["Bar "]..2,
 			func = function() ACD:SelectGroup("ElvUI", "actionbar", "bar2") end,
 			disabled = function() return not E.ActionBars.Initialized end
 		},
 		spacer3 = {
-			order = 15,
+			order = 15 - shamanOrder,
 			type = "description",
 			name = " "
 		},
 		bar3Shortcut = {
-			order = 16 - (shamanOrder + shamanOrder),
+			order = 16 - shamanOrder,
 			type = "execute",
 			name = L["Bar "]..3,
 			func = function() ACD:SelectGroup("ElvUI", "actionbar", "bar3") end,
