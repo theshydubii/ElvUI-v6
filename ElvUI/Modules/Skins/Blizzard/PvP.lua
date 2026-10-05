@@ -13,7 +13,7 @@ S:AddCallback("Skin_PvP", function()
 	PVPParentFrame.backdrop:Point("TOPLEFT", 11, -12)
 	PVPParentFrame.backdrop:Point("BOTTOMRIGHT", -32, 76)
 
-	S:SetUIPanelWindowInfo(PVPParentFrame, "width")
+	S:SetUIPanelWindowInfo(PVPParentFrame, "width", 341)
 	S:SetBackdropHitRect(PVPParentFrame)
 	S:SetBackdropHitRect(PVPFrame, PVPParentFrame.backdrop)
 	S:SetBackdropHitRect(PVPBattlegroundFrame, PVPParentFrame.backdrop)
@@ -116,7 +116,7 @@ S:AddCallback("Skin_PvP", function()
 	BattlefieldFrame.backdrop:Point("TOPLEFT", 11, -12)
 	BattlefieldFrame.backdrop:Point("BOTTOMRIGHT", -32, 76)
 
-	S:SetUIPanelWindowInfo(BattlefieldFrame, "width")
+	S:SetUIPanelWindowInfo(BattlefieldFrame, "width", 341)
 	S:SetBackdropHitRect(BattlefieldFrame)
 
 	S:HandleCloseButton(BattlefieldFrameCloseButton, BattlefieldFrame.backdrop)

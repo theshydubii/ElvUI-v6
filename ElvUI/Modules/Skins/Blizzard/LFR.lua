@@ -14,7 +14,7 @@ S:AddCallback("Skin_LFR", function()
 	LFRParentFrame.backdrop:Point("BOTTOMRIGHT", -3, 4)
 
 	S:HookScript(LFRParentFrame, "OnShow", function(self)
-		S:SetUIPanelWindowInfo(self, "width")
+		S:SetUIPanelWindowInfo(self, "width", 341)
 		S:SetBackdropHitRect(self)
 		S:Unhook(self, "OnShow")
 	end)
