@@ -550,12 +550,13 @@ function AddOn:ToggleOptionsUI(msg)
 		ConfigOpen = ACD and ACD.OpenFrames and ACD.OpenFrames[AddOnName]
 		if ConfigOpen then
 			local frame = ConfigOpen.frame
-			if frame and not self.GUIFrame then
-				self.GUIFrame = frame
-				ElvUIGUIFrame = self.GUIFrame
-
+			if frame then
+				if not self.GUIFrame then
+					self.GUIFrame = frame
+					ElvUIGUIFrame = self.GUIFrame
+					hooksecurefunc(frame, "StopMovingOrSizing", AddOn.ConfigStopMovingOrSizing)
+				end
 				self:UpdateConfigSize()
-				hooksecurefunc(frame, "StopMovingOrSizing", AddOn.ConfigStopMovingOrSizing)
 			end
 		end
 
