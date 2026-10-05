@@ -918,6 +918,7 @@ local function BuildABConfig()
 			}
 		}
 	}
+	--[[ WIP - Not Working Correctly
 	group.raidmarkers = {
 		order = 6,
 		type = "group",
@@ -993,6 +994,7 @@ local function BuildABConfig()
 			}
 		}
 	}
+	]]
 	for i = 1, 6 do
 		local name = L["Bar "]..i
 		group["bar"..i] = {
@@ -1262,12 +1264,19 @@ E.Options.args.actionbar = {
 			func = function() ACD:SelectGroup("ElvUI", "actionbar", "microbar") end,
 			disabled = function() return not E.ActionBars.Initialized end
 		},
+		--[[ WIP - Not Working Correctly
 		raidmarkersShortcut = {
 			order = 12 - shamanOrder,
 			type = "execute",
 			name = L["Raid Markers"],
 			func = function() ACD:SelectGroup("ElvUI", "actionbar", "raidmarkers") end,
 			disabled = function() return not E.ActionBars.Initialized end
+		},
+		]]
+		raidmarkersWIP = {
+			order = 12 - shamanOrder,
+			type = "description",
+			name = "Raid Markers - WIP - Not Working Correctly"
 		},
 		bar1Shortcut = {
 			order = 13 - shamanOrder,

@@ -133,7 +133,7 @@ function AB:SetupRaidMarkersBar()
 		local button = CreateFrame("Button", "ElvUI_RaidMarkersButton"..index, frame, "SecureActionButtonTemplate")
 		button:SetTemplate("Default", true)
 		button:SetID(index)
-		button:RegisterForClicks("AnyDown")
+		button:RegisterForClicks("LeftButtonUp")
 		button:SetAttribute("type1", "macro")
 		button:SetAttribute("macrotext1", index == BUTTON_COUNT and "/tm 0" or "/tm "..index)
 		button.icon = button:CreateTexture(nil, "ARTWORK")
@@ -141,7 +141,7 @@ function AB:SetupRaidMarkersBar()
 
 		if index == BUTTON_COUNT then
 			button.icon:SetTexture([[Interface\BUTTONS\UI-GroupLoot-Pass-Up]])
-			button.icon:SetDesaturated(true)
+			button.icon:SetDesaturated(false)
 		else
 			button.icon:SetTexture([[Interface\TargetingFrame\UI-RaidTargetingIcons]])
 			SetRaidTargetIconTexture(button.icon, index)

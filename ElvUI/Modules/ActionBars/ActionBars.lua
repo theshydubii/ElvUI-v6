@@ -313,10 +313,12 @@ function AB:PLAYER_REGEN_ENABLED()
 		self:UpdateMicroBarVisibility()
 		AB.NeedsUpdateMicroBarVisibility = nil
 	end
+	--[[ WIP - Not Working Correctly
 	if AB.NeedsUpdateRaidMarkersBar then
 		self:UpdateRaidMarkersBar()
 		AB.NeedsUpdateRaidMarkersBar = nil
 	end
+	]]
 	if AB.NeedsAdjustMaxStanceButtons then
 		AB:AdjustMaxStanceButtons(AB.NeedsAdjustMaxStanceButtons) --sometimes it holds the event, otherwise true. pass it before we nil it.
 		AB.NeedsAdjustMaxStanceButtons = nil
@@ -1010,7 +1012,7 @@ function AB:Initialize()
 
 	self:DisableBlizzard()
 	self:SetupMicroBar()
-	self:SetupRaidMarkersBar()
+	-- WIP - Not Working Correctly: self:SetupRaidMarkersBar()
 	self:UpdateBar1Paging()
 
 	for i = 1, 6 do
