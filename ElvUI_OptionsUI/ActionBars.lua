@@ -1110,7 +1110,6 @@ local function BuildABConfig()
 	end
 end
 
-local shamanOrder = E.myclass ~= "SHAMAN" and 1 or 0
 E.Options.args.actionbar = {
 	type = "group",
 	name = L["Action Bars"],
@@ -1173,7 +1172,7 @@ E.Options.args.actionbar = {
 			name = " "
 		},
 		totemBarShortcut = {
-			order = E.myclass ~= "SHAMAN" and 21 or 10,
+			order = 17,
 			type = "execute",
 			name = L["TUTORIAL_TITLE47"],
 			func = function() ACD:SelectGroup("ElvUI", "actionbar", "barTotem") end,
@@ -1181,68 +1180,49 @@ E.Options.args.actionbar = {
 			hidden = E.myclass ~= "SHAMAN" and true or false
 		},
 		microbarShortcut = {
-			order = 11 - shamanOrder,
+			order = 10,
 			type = "execute",
 			name = L["Micro Bar"],
 			func = function() ACD:SelectGroup("ElvUI", "actionbar", "microbar") end,
 			disabled = function() return not E.ActionBars.Initialized end
 		},
-		--[[ WIP - Not Working Correctly
-		raidmarkersShortcut = {
-			order = 12 - shamanOrder,
-			type = "execute",
-			name = L["Raid Markers"],
-			func = function() ACD:SelectGroup("ElvUI", "actionbar", "raidmarkers") end,
-			disabled = function() return not E.ActionBars.Initialized end
-		},
-		]]
-		raidmarkersWIP = {
-			order = 12 - shamanOrder,
-			type = "description",
-			name = "Raid Markers - WIP - Not Working Correctly"
-		},
 		bar1Shortcut = {
-			order = 13 - shamanOrder,
+			order = 11,
 			type = "execute",
 			name = L["Bar "]..1,
 			func = function() ACD:SelectGroup("ElvUI", "actionbar", "bar1") end,
 			disabled = function() return not E.ActionBars.Initialized end
 		},
 		bar2Shortcut = {
-			order = 14 - shamanOrder,
+			order = 12,
 			type = "execute",
 			name = L["Bar "]..2,
 			func = function() ACD:SelectGroup("ElvUI", "actionbar", "bar2") end,
 			disabled = function() return not E.ActionBars.Initialized end
 		},
-		spacer3 = {
-			order = 15 - shamanOrder,
-			type = "description",
-			name = " "
-		},
 		bar3Shortcut = {
-			order = 16 - shamanOrder,
+			order = 13,
 			type = "execute",
 			name = L["Bar "]..3,
 			func = function() ACD:SelectGroup("ElvUI", "actionbar", "bar3") end,
 			disabled = function() return not E.ActionBars.Initialized end
 		},
 		bar4Shortcut = {
-			order = 17 - shamanOrder,
+			order = 14,
 			type = "execute",
 			name = L["Bar "]..4,
 			func = function() ACD:SelectGroup("ElvUI", "actionbar", "bar4") end,
 			disabled = function() return not E.ActionBars.Initialized end
 		},
 		bar5Shortcut = {
-			order = 18 - shamanOrder,
+			order = 15,
 			type = "execute",
 			name = L["Bar "]..5,
 			func = function() ACD:SelectGroup("ElvUI", "actionbar", "bar5") end,
 			disabled = function() return not E.ActionBars.Initialized end
 		},
 		bar6Shortcut = {
-			order = 19 - shamanOrder,
+			order = 16,
 			type = "execute",
 			name = L["Bar "]..6,
 			func = function() ACD:SelectGroup("ElvUI", "actionbar", "bar6") end,
