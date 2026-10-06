@@ -427,6 +427,30 @@ E.Options.args.bags = {
 					desc = L["Adjust the width of the bank frame."],
 					min = 150, max = 1400, step = 1,
 					set = function(info, value) E.db.bags[info[#info]] = value B:Layout(true) end
+				},
+				bagBackgroundAlpha = {
+					order = 7,
+					type = "range",
+					name = L["Bag Background Opacity"],
+					desc = L["Set the opacity of the bag panel background. Set to 100% for a solid background."],
+					min = 0, max = 1, step = 0.01,
+					isPercent = true,
+					set = function(info, value)
+						E.db.bags[info[#info]] = value
+						B:UpdateContainerBackdropAlpha(B.BagFrame, false)
+					end
+				},
+				bankBackgroundAlpha = {
+					order = 8,
+					type = "range",
+					name = L["Bank Background Opacity"],
+					desc = L["Set the opacity of the bank panel background. Set to 100% for a solid background."],
+					min = 0, max = 1, step = 0.01,
+					isPercent = true,
+					set = function(info, value)
+						E.db.bags[info[#info]] = value
+						B:UpdateContainerBackdropAlpha(B.BankFrame, true)
+					end
 				}
 			}
 		},

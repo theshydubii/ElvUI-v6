@@ -45,6 +45,64 @@ local function UpdatePushedColor()
 	AB:PositionAndSizeBarShapeShift()
 end
 
+local function FadeConditionOption(order, key, name, getDB, update)
+	return {
+		order = order,
+		type = "toggle",
+		name = L[name],
+		get = function() return getDB()[key] end,
+		set = function(_, value)
+			getDB()[key] = value
+			update()
+		end
+	}
+end
+
+local function IndependentFadeOptions(barName, order, isDisabled)
+	local function getDB()
+		return E.db.actionbar[barName]
+	end
+
+	local function update()
+		AB:UpdateFadeBars()
+	end
+
+	return {
+		order = order,
+		type = "group",
+		name = L["Independent Fade"],
+		guiInline = true,
+		disabled = function() return isDisabled() or getDB().inheritGlobalFade end,
+		args = {
+			fade = {
+				order = 1,
+				type = "toggle",
+				name = L["Enable Independent Fade"],
+				desc = L["Use this bar's fade settings instead of the global fade settings."],
+				get = function() return getDB().fade end,
+				set = function(_, value) getDB().fade = value update() end
+			},
+			fadeAlpha = {
+				order = 2,
+				type = "range",
+				name = L["Fade Transparency"],
+				desc = L["Transparency level while this bar is faded."],
+				min = 0, max = 1, step = 0.01,
+				isPercent = true,
+				get = function() return getDB().fadeAlpha end,
+				set = function(_, value) getDB().fadeAlpha = value update() end,
+				disabled = function() local db = getDB() return isDisabled() or db.inheritGlobalFade or not db.fade end
+			},
+			fadeCombat = FadeConditionOption(3, "fadeCombat", "Show in Combat", getDB, update),
+			fadeTarget = FadeConditionOption(4, "fadeTarget", "Show with Target", getDB, update),
+			fadeFocus = FadeConditionOption(5, "fadeFocus", "Show with Focus", getDB, update),
+			fadeHealth = FadeConditionOption(6, "fadeHealth", "Show when Not at Full Health", getDB, update),
+			fadeCast = FadeConditionOption(7, "fadeCast", "Show while Casting", getDB, update),
+			fadeMouseover = FadeConditionOption(8, "fadeMouseover", "Show on Mouse Over", getDB, update)
+		}
+	}
+end
+
 local function ClickThroughOption(order, barName, name, optional)
 	return {
 		order = order,
@@ -181,10 +239,24 @@ local function BuildABConfig()
 				order = 14,
 				type = "range",
 				name = L["Global Fade Transparency"],
-				desc = L["Transparency level when not in combat, no target exists, full health, not casting, and no focus target exists."],
+				desc = L["Transparency level when none of the selected global fade conditions are met."],
 				min = 0, max = 1, step = 0.01,
 				isPercent = true,
-				set = function(info, value) E.db.actionbar[info[#info]] = value AB.fadeParent:SetAlpha(1-value) end
+				set = function(info, value) E.db.actionbar[info[#info]] = value AB:UpdateFadeBars() end
+			},
+			globalFadeConditions = {
+				order = 15,
+				type = "group",
+				name = L["Global Fade Conditions"],
+				guiInline = true,
+				args = {
+					combat = FadeConditionOption(1, "globalFadeCombat", "Show in Combat", function() return E.db.actionbar end, function() AB:UpdateFadeBars() end),
+					target = FadeConditionOption(2, "globalFadeTarget", "Show with Target", function() return E.db.actionbar end, function() AB:UpdateFadeBars() end),
+					focus = FadeConditionOption(3, "globalFadeFocus", "Show with Focus", function() return E.db.actionbar end, function() AB:UpdateFadeBars() end),
+					health = FadeConditionOption(4, "globalFadeHealth", "Show when Not at Full Health", function() return E.db.actionbar end, function() AB:UpdateFadeBars() end),
+					cast = FadeConditionOption(5, "globalFadeCast", "Show while Casting", function() return E.db.actionbar end, function() AB:UpdateFadeBars() end),
+					mouseover = FadeConditionOption(6, "globalFadeMouseover", "Show on Mouse Over", function() return E.db.actionbar end, function() AB:UpdateFadeBars() end)
+				}
 			},
 			clickThroughGroup = {
 				order = 18,
@@ -472,8 +544,16 @@ local function BuildABConfig()
 					desc = L["The frame is not shown unless you mouse over the frame."],
 					disabled = function() return not E.db.actionbar.barTotem.enabled end
 				},
-				flyoutDirection = {
+				inheritGlobalFade = {
 					order = 6,
+					type = "toggle",
+					name = L["Inherit Global Fade"],
+					desc = L["Use the global fade conditions and transparency for this bar."],
+					disabled = function() return not E.db.actionbar.barTotem.enabled end
+				},
+				independentFade = IndependentFadeOptions("barTotem", 7, function() return not E.db.actionbar.barTotem.enabled end),
+				flyoutDirection = {
+					order = 8,
 					type = "select",
 					name = L["Flyout Direction"],
 					values = {
@@ -483,7 +563,7 @@ local function BuildABConfig()
 					disabled = function() return not E.db.actionbar.barTotem.enabled end
 				},
 				buttonsize = {
-					order = 7,
+					order = 9,
 					type = "range",
 					name = L["Button Size"],
 					desc = L["The size of the action buttons."],
@@ -491,7 +571,7 @@ local function BuildABConfig()
 					disabled = function() return not E.db.actionbar.barTotem.enabled end
 				},
 				buttonspacing = {
-					order = 8,
+					order = 10,
 					type = "range",
 					name = L["Button Spacing"],
 					desc = L["The spacing between buttons."],
@@ -499,7 +579,7 @@ local function BuildABConfig()
 					disabled = function() return not E.db.actionbar.barTotem.enabled end
 				},
 				flyoutSpacing = {
-					order = 9,
+					order = 11,
 					type = "range",
 					name = L["Flyout Spacing"],
 					desc = L["The spacing between buttons."],
@@ -507,7 +587,7 @@ local function BuildABConfig()
 					disabled = function() return not E.db.actionbar.barTotem.enabled end
 				},
 				alpha = {
-					order = 10,
+					order = 12,
 					type = "range",
 					name = L["Alpha"],
 					isPercent = true,
@@ -515,7 +595,7 @@ local function BuildABConfig()
 					disabled = function() return not E.db.actionbar.barTotem.enabled end
 				},
 				visibility = {
-					order = 11,
+					order = 13,
 					type = "input",
 					name = L["Visibility State"],
 					desc = L["This works like a macro, you can run different situations to get the actionbar to show/hide differently.\n Example: '[combat] show;hide'"],
@@ -583,11 +663,12 @@ local function BuildABConfig()
 				order = 7,
 				type = "toggle",
 				name = L["Inherit Global Fade"],
-				desc = L["Inherit the global fade, mousing over, targetting, setting focus, losing health, entering combat will set the remove transparency. Otherwise it will use the transparency level in the general actionbar settings for global fade alpha."],
+				desc = L["Use the global fade conditions and transparency for this bar."],
 				disabled = function() return not E.db.actionbar.barPet.enabled end
 			},
+			independentFade = IndependentFadeOptions("barPet", 8, function() return not E.db.actionbar.barPet.enabled end),
 			point = {
-				order = 8,
+				order = 9,
 				type = "select",
 				name = L["Anchor Point"],
 				desc = L["The first button anchors itself to this point on the bar."],
@@ -595,7 +676,7 @@ local function BuildABConfig()
 				disabled = function() return not E.db.actionbar.barPet.enabled end
 			},
 			buttons = {
-				order = 9,
+				order = 10,
 				type = "range",
 				name = L["Buttons"],
 				desc = L["The amount of buttons to display."],
@@ -603,7 +684,7 @@ local function BuildABConfig()
 				disabled = function() return not E.db.actionbar.barPet.enabled end
 			},
 			buttonsPerRow = {
-				order = 10,
+				order = 11,
 				type = "range",
 				name = L["Buttons Per Row"],
 				desc = L["The amount of buttons to display per row."],
@@ -611,7 +692,7 @@ local function BuildABConfig()
 				disabled = function() return not E.db.actionbar.barPet.enabled end
 			},
 			buttonsize = {
-				order = 11,
+				order = 12,
 				type = "range",
 				name = L["Button Size"],
 				desc = L["The size of the action buttons."],
@@ -619,7 +700,7 @@ local function BuildABConfig()
 				disabled = function() return not E.db.actionbar.barPet.enabled end
 			},
 			buttonspacing = {
-				order = 12,
+				order = 13,
 				type = "range",
 				name = L["Button Spacing"],
 				desc = L["The spacing between buttons."],
@@ -627,7 +708,7 @@ local function BuildABConfig()
 				disabled = function() return not E.db.actionbar.barPet.enabled end
 			},
 			backdropSpacing = {
-				order = 13,
+				order = 14,
 				type = "range",
 				name = L["Backdrop Spacing"],
 				desc = L["The spacing between the backdrop and the buttons."],
@@ -635,7 +716,7 @@ local function BuildABConfig()
 				disabled = function() return not E.db.actionbar.barPet.enabled end
 			},
 			heightMult = {
-				order = 14,
+				order = 15,
 				type = "range",
 				name = L["Height Multiplier"],
 				desc = L["Multiply the backdrops height or width by this value. This is usefull if you wish to have more than one bar behind a backdrop."],
@@ -643,7 +724,7 @@ local function BuildABConfig()
 				disabled = function() return not E.db.actionbar.barPet.enabled end
 			},
 			widthMult = {
-				order = 15,
+				order = 16,
 				type = "range",
 				name = L["Width Multiplier"],
 				desc = L["Multiply the backdrops height or width by this value. This is usefull if you wish to have more than one bar behind a backdrop."],
@@ -651,7 +732,7 @@ local function BuildABConfig()
 				disabled = function() return not E.db.actionbar.barPet.enabled end
 			},
 			alpha = {
-				order = 16,
+				order = 17,
 				type = "range",
 				name = L["Alpha"],
 				isPercent = true,
@@ -659,7 +740,7 @@ local function BuildABConfig()
 				disabled = function() return not E.db.actionbar.barPet.enabled end
 			},
 			visibility = {
-				order = 17,
+				order = 18,
 				type = "input",
 				name = L["Visibility State"],
 				desc = L["This works like a macro, you can run different situations to get the actionbar to show/hide differently.\n Example: '[combat] show;hide'"],
@@ -726,11 +807,12 @@ local function BuildABConfig()
 				order = 8,
 				type = "toggle",
 				name = L["Inherit Global Fade"],
-				desc = L["Inherit the global fade, mousing over, targetting, setting focus, losing health, entering combat will set the remove transparency. Otherwise it will use the transparency level in the general actionbar settings for global fade alpha."],
+				desc = L["Use the global fade conditions and transparency for this bar."],
 				disabled = function() return not E.db.actionbar.stanceBar.enabled end
 			},
+			independentFade = IndependentFadeOptions("stanceBar", 9, function() return not E.db.actionbar.stanceBar.enabled end),
 			point = {
-				order = 9,
+				order = 10,
 				type = "select",
 				name = L["Anchor Point"],
 				desc = L["The first button anchors itself to this point on the bar."],
@@ -738,7 +820,7 @@ local function BuildABConfig()
 				disabled = function() return not E.db.actionbar.stanceBar.enabled end
 			},
 			buttons = {
-				order = 10,
+				order = 11,
 				type = "range",
 				name = L["Buttons"],
 				desc = L["The amount of buttons to display."],
@@ -746,7 +828,7 @@ local function BuildABConfig()
 				disabled = function() return not E.db.actionbar.stanceBar.enabled end
 			},
 			buttonsPerRow = {
-				order = 11,
+				order = 12,
 				type = "range",
 				name = L["Buttons Per Row"],
 				desc = L["The amount of buttons to display per row."],
@@ -754,7 +836,7 @@ local function BuildABConfig()
 				disabled = function() return not E.db.actionbar.stanceBar.enabled end
 			},
 			buttonsize = {
-				order = 12,
+				order = 13,
 				type = "range",
 				name = L["Button Size"],
 				desc = L["The size of the action buttons."],
@@ -762,7 +844,7 @@ local function BuildABConfig()
 				disabled = function() return not E.db.actionbar.stanceBar.enabled end
 			},
 			buttonspacing = {
-				order = 13,
+				order = 14,
 				type = "range",
 				name = L["Button Spacing"],
 				desc = L["The spacing between buttons."],
@@ -770,7 +852,7 @@ local function BuildABConfig()
 				disabled = function() return not E.db.actionbar.stanceBar.enabled end
 			},
 			backdropSpacing = {
-				order = 14,
+				order = 15,
 				type = "range",
 				name = L["Backdrop Spacing"],
 				desc = L["The spacing between the backdrop and the buttons."],
@@ -778,7 +860,7 @@ local function BuildABConfig()
 				disabled = function() return not E.db.actionbar.stanceBar.enabled end
 			},
 			heightMult = {
-				order = 15,
+				order = 16,
 				type = "range",
 				name = L["Height Multiplier"],
 				desc = L["Multiply the backdrops height or width by this value. This is usefull if you wish to have more than one bar behind a backdrop."],
@@ -786,7 +868,7 @@ local function BuildABConfig()
 				disabled = function() return not E.db.actionbar.stanceBar.enabled end
 			},
 			widthMult = {
-				order = 16,
+				order = 17,
 				type = "range",
 				name = L["Width Multiplier"],
 				desc = L["Multiply the backdrops height or width by this value. This is usefull if you wish to have more than one bar behind a backdrop."],
@@ -794,7 +876,7 @@ local function BuildABConfig()
 				disabled = function() return not E.db.actionbar.stanceBar.enabled end
 			},
 			alpha = {
-				order = 17,
+				order = 18,
 				type = "range",
 				name = L["Alpha"],
 				isPercent = true,
@@ -802,7 +884,7 @@ local function BuildABConfig()
 				disabled = function() return not E.db.actionbar.stanceBar.enabled end
 			},
 			style = {
-				order = 18,
+				order = 19,
 				type = "select",
 				name = L["Style"],
 				desc = L["This setting will be updated upon changing stances."],
@@ -813,7 +895,7 @@ local function BuildABConfig()
 				disabled = function() return not E.db.actionbar.stanceBar.enabled end
 			},
 			visibility = {
-				order = 19,
+				order = 20,
 				type = "input",
 				name = L["Visibility State"],
 				desc = L["This works like a macro, you can run different situations to get the actionbar to show/hide differently.\n Example: '[combat] show;hide'"],
@@ -867,8 +949,16 @@ local function BuildABConfig()
 				desc = L["The frame is not shown unless you mouse over the frame."],
 				disabled = function() return not E.db.actionbar.microbar.enabled end
 			},
-			buttonSize = {
+			inheritGlobalFade = {
 				order = 6,
+				type = "toggle",
+				name = L["Inherit Global Fade"],
+				desc = L["Use the global fade conditions and transparency for this bar."],
+				disabled = function() return not E.db.actionbar.microbar.enabled end
+			},
+			independentFade = IndependentFadeOptions("microbar", 7, function() return not E.db.actionbar.microbar.enabled end),
+			buttonSize = {
+				order = 8,
 				type = "range",
 				name = L["Button Size"],
 				desc = L["The size of the action buttons."],
@@ -876,7 +966,7 @@ local function BuildABConfig()
 				disabled = function() return not E.db.actionbar.microbar.enabled end
 			},
 			buttonSpacing = {
-				order = 7,
+				order = 9,
 				type = "range",
 				name = L["Button Spacing"],
 				desc = L["The spacing between buttons."],
@@ -884,7 +974,7 @@ local function BuildABConfig()
 				disabled = function() return not E.db.actionbar.microbar.enabled end
 			},
 			buttonsPerRow = {
-				order = 8,
+				order = 10,
 				type = "range",
 				name = L["Buttons Per Row"],
 				desc = L["The amount of buttons to display per row."],
@@ -892,7 +982,7 @@ local function BuildABConfig()
 				disabled = function() return not E.db.actionbar.microbar.enabled end
 			},
 			alpha = {
-				order = 9,
+				order = 11,
 				type = "range",
 				name = L["Alpha"],
 				isPercent = true,
@@ -901,7 +991,7 @@ local function BuildABConfig()
 				disabled = function() return not E.db.actionbar.microbar.enabled end
 			},
 			visibility = {
-				order = 10,
+				order = 12,
 				type = "input",
 				name = L["Visibility State"],
 				desc = L["This works like a macro, you can run different situations to get the actionbar to show/hide differently.\n Example: '[combat] show;hide'"],
@@ -981,11 +1071,12 @@ local function BuildABConfig()
 					order = 8,
 					type = "toggle",
 					name = L["Inherit Global Fade"],
-					desc = L["Inherit the global fade, mousing over, targetting, setting focus, losing health, entering combat will set the remove transparency. Otherwise it will use the transparency level in the general actionbar settings for global fade alpha."],
+					desc = L["Use the global fade conditions and transparency for this bar."],
 					disabled = function() return not E.db.actionbar["bar"..i].enabled end
 				},
+				independentFade = IndependentFadeOptions("bar"..i, 9, function() return not E.db.actionbar["bar"..i].enabled end),
 				point = {
-					order = 9,
+					order = 10,
 					type = "select",
 					name = L["Anchor Point"],
 					desc = L["The first button anchors itself to this point on the bar."],
@@ -1166,13 +1257,8 @@ E.Options.args.actionbar = {
 			func = function() ACD:SelectGroup("ElvUI", "actionbar", "stanceBar") end,
 			disabled = function() return not E.ActionBars.Initialized end
 		},
-		spacer2 = {
-			order = 9,
-			type = "description",
-			name = " "
-		},
 		totemBarShortcut = {
-			order = 17,
+			order = 16,
 			type = "execute",
 			name = L["TUTORIAL_TITLE47"],
 			func = function() ACD:SelectGroup("ElvUI", "actionbar", "barTotem") end,
@@ -1180,49 +1266,49 @@ E.Options.args.actionbar = {
 			hidden = E.myclass ~= "SHAMAN" and true or false
 		},
 		microbarShortcut = {
-			order = 10,
+			order = 9,
 			type = "execute",
 			name = L["Micro Bar"],
 			func = function() ACD:SelectGroup("ElvUI", "actionbar", "microbar") end,
 			disabled = function() return not E.ActionBars.Initialized end
 		},
 		bar1Shortcut = {
-			order = 11,
+			order = 10,
 			type = "execute",
 			name = L["Bar "]..1,
 			func = function() ACD:SelectGroup("ElvUI", "actionbar", "bar1") end,
 			disabled = function() return not E.ActionBars.Initialized end
 		},
 		bar2Shortcut = {
-			order = 12,
+			order = 11,
 			type = "execute",
 			name = L["Bar "]..2,
 			func = function() ACD:SelectGroup("ElvUI", "actionbar", "bar2") end,
 			disabled = function() return not E.ActionBars.Initialized end
 		},
 		bar3Shortcut = {
-			order = 13,
+			order = 12,
 			type = "execute",
 			name = L["Bar "]..3,
 			func = function() ACD:SelectGroup("ElvUI", "actionbar", "bar3") end,
 			disabled = function() return not E.ActionBars.Initialized end
 		},
 		bar4Shortcut = {
-			order = 14,
+			order = 13,
 			type = "execute",
 			name = L["Bar "]..4,
 			func = function() ACD:SelectGroup("ElvUI", "actionbar", "bar4") end,
 			disabled = function() return not E.ActionBars.Initialized end
 		},
 		bar5Shortcut = {
-			order = 15,
+			order = 14,
 			type = "execute",
 			name = L["Bar "]..5,
 			func = function() ACD:SelectGroup("ElvUI", "actionbar", "bar5") end,
 			disabled = function() return not E.ActionBars.Initialized end
 		},
 		bar6Shortcut = {
-			order = 16,
+			order = 15,
 			type = "execute",
 			name = L["Bar "]..6,
 			func = function() ACD:SelectGroup("ElvUI", "actionbar", "bar6") end,

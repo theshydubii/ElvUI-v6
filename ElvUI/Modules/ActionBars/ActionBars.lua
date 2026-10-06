@@ -38,6 +38,7 @@ AB.RegisterCooldown = E.RegisterCooldown
 
 AB.handledBars = {} --List of all bars
 AB.handledbuttons = {} --List of all buttons that have been modified.
+AB.fadeBars = {}
 AB.barDefaults = {
 	bar1 = {
 		page = 1,
@@ -155,11 +156,8 @@ function AB:PositionAndSizeBar(barName)
 		bar:SetAlpha(bar.db.alpha)
 	end
 
-	if bar.db.inheritGlobalFade then
-		bar:SetParent(self.fadeParent)
-	else
-		bar:SetParent(E.UIParent)
-	end
+	bar:SetParent(self.fadeParent)
+	self:RegisterFadeBar(barName, bar)
 
 	local button, lastButton, lastColumnButton
 	for i = 1, NUM_ACTIONBAR_BUTTONS do
@@ -225,6 +223,7 @@ function AB:PositionAndSizeBar(barName)
 		RegisterStateDriver(bar, "visibility", visibility) -- this is ghetto
 		RegisterStateDriver(bar, "page", page)
 		bar:SetAttribute("page", page)
+		self:UpdateFadeBar(bar)
 
 		if not bar.initialized then
 			bar.initialized = true
@@ -615,54 +614,88 @@ function AB:StyleButton(button, noBackdrop, useMasque)
 	end
 end
 
-function AB:Bar_OnEnter(bar)
-	if bar:GetParent() == self.fadeParent then
-		if not self.fadeParent.mouseLock then
-			E:UIFrameFadeIn(self.fadeParent, 0.2, self.fadeParent:GetAlpha(), 1)
-		end
+local function FadeConditionsMet(db, prefix)
+	local cur, max = UnitHealth("player"), UnitHealthMax("player")
+	local cast, channel = UnitCastingInfo("player"), UnitChannelInfo("player")
+
+	return (db[prefix.."Combat"] and UnitAffectingCombat("player"))
+		or (db[prefix.."Target"] and UnitExists("target"))
+		or (db[prefix.."Focus"] and UnitExists("focus"))
+		or (db[prefix.."Health"] and cur < max)
+		or (db[prefix.."Cast"] and (cast or channel))
+end
+
+function AB:RegisterFadeBar(name, bar)
+	self.fadeBars[name] = bar
+	bar.fadeHovered = false
+	self:UpdateFadeBar(bar)
+end
+
+function AB:UpdateFadeBar(bar)
+	local db = bar.db
+	if not db then return end
+
+	local fadeAlpha, active, revealOnHover
+	if db.inheritGlobalFade then
+		fadeAlpha = self.db.globalFadeAlpha
+		active = FadeConditionsMet(self.db, "globalFade")
+		revealOnHover = self.db.globalFadeMouseover
+	elseif db.fade then
+		fadeAlpha = db.fadeAlpha
+		active = FadeConditionsMet(db, "fade")
+		revealOnHover = db.fadeMouseover
+	else
+		fadeAlpha = 0
+		active = true
+		revealOnHover = false
 	end
 
-	if bar.mouseover then
-		E:UIFrameFadeIn(bar, 0.2, bar:GetAlpha(), bar.db.alpha)
+	local hovered = bar.fadeHovered or bar:IsMouseOver()
+	local alpha = (active and 1 or 1 - fadeAlpha) * db.alpha
+	if hovered and (revealOnHover or db.mouseover) then
+		alpha = db.alpha
+	elseif db.mouseover then
+		alpha = 0
 	end
+
+	local currentAlpha = bar:GetAlpha()
+	if alpha > currentAlpha then
+		E:UIFrameFadeIn(bar, 0.2, currentAlpha, alpha)
+	elseif alpha < currentAlpha then
+		E:UIFrameFadeOut(bar, 0.2, currentAlpha, alpha)
+	end
+end
+
+function AB:UpdateFadeBars()
+	for _, bar in pairs(self.fadeBars) do
+		self:UpdateFadeBar(bar)
+	end
+end
+
+function AB:FadeBar_OnEnter(bar)
+	bar.fadeHovered = true
+	self:UpdateFadeBar(bar)
+end
+
+function AB:FadeBar_OnLeave(bar)
+	bar.fadeHovered = bar:IsMouseOver()
+	self:UpdateFadeBar(bar)
+end
+
+function AB:Bar_OnEnter(bar)
+	self:FadeBar_OnEnter(bar)
 end
 
 function AB:Bar_OnLeave(bar)
-	if bar:GetParent() == self.fadeParent then
-		if not self.fadeParent.mouseLock then
-			E:UIFrameFadeOut(self.fadeParent, 0.2, self.fadeParent:GetAlpha(), 1 - self.db.globalFadeAlpha)
-		end
-	end
-
-	if bar.mouseover then
-		E:UIFrameFadeOut(bar, 0.2, bar:GetAlpha(), 0)
-	end
+	self:FadeBar_OnLeave(bar)
 end
 
 function AB:Button_OnEnter(button)
-	local bar = button:GetParent()
-	if bar:GetParent() == self.fadeParent then
-		if not self.fadeParent.mouseLock then
-			E:UIFrameFadeIn(self.fadeParent, 0.2, self.fadeParent:GetAlpha(), 1)
-		end
-	end
-
-	if bar.mouseover then
-		E:UIFrameFadeIn(bar, 0.2, bar:GetAlpha(), bar.db.alpha)
-	end
+	self:FadeBar_OnEnter(button:GetParent())
 end
 
 function AB:Button_OnLeave(button)
-	local bar = button:GetParent()
-	if bar:GetParent() == self.fadeParent then
-		if not self.fadeParent.mouseLock then
-			E:UIFrameFadeOut(self.fadeParent, 0.2, self.fadeParent:GetAlpha(), 1 - self.db.globalFadeAlpha)
-		end
-	end
-
-	if bar.mouseover then
-		E:UIFrameFadeOut(bar, 0.2, bar:GetAlpha(), 0)
-	end
+	self:FadeBar_OnLeave(button:GetParent())
 end
 
 function AB:BlizzardOptionsPanel_OnEvent()
@@ -684,17 +717,7 @@ function AB:FadeParent_OnEvent(event, unit)
 	or event == "UNIT_SPELLCAST_CHANNEL_STOP"
 	or event == "UNIT_HEALTH") and unit ~= "player" then return end
 
-	local cur, max = UnitHealth("player"), UnitHealthMax("player")
-	local cast, channel = UnitCastingInfo("player"), UnitChannelInfo("player")
-	local target, focus = UnitExists("target"), UnitExists("focus")
-	local combat = UnitAffectingCombat("player")
-	if (cast or channel) or (cur ~= max) or (target or focus) or combat then
-		self.mouseLock = true
-		E:UIFrameFadeIn(self, 0.2, self:GetAlpha(), 1)
-	else
-		self.mouseLock = false
-		E:UIFrameFadeOut(self, 0.2, self:GetAlpha(), 1 - AB.db.globalFadeAlpha)
-	end
+	AB:UpdateFadeBars()
 end
 
 function AB:DisableBlizzard()
@@ -998,7 +1021,7 @@ function AB:Initialize()
 	self.MSQGroup = E.Masque and E.Masque:Group("ElvUI", "ActionBars")
 
 	self.fadeParent = CreateFrame("Frame", "Elv_ABFade", UIParent)
-	self.fadeParent:SetAlpha(1 - self.db.globalFadeAlpha)
+	self.fadeParent:SetAlpha(1)
 	self.fadeParent:RegisterEvent("PLAYER_REGEN_DISABLED")
 	self.fadeParent:RegisterEvent("PLAYER_REGEN_ENABLED")
 	self.fadeParent:RegisterEvent("PLAYER_TARGET_CHANGED")

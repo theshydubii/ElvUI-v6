@@ -186,11 +186,8 @@ function AB:PositionAndSizeBarShapeShift()
 		horizontalGrowth = "LEFT"
 	end
 
-	if self.db.stanceBar.inheritGlobalFade then
-		bar:SetParent(self.fadeParent)
-	else
-		bar:SetParent(E.UIParent)
-	end
+	bar:SetParent(self.fadeParent)
+	self:RegisterFadeBar("stanceBar", bar)
 
 	local button, lastButton, lastColumnButton
 	local firstButtonSpacing = (self.db.stanceBar.backdrop and (E.Border + backdropSpacing) or E.Spacing)
@@ -262,6 +259,8 @@ function AB:PositionAndSizeBarShapeShift()
 	elseif self.MSQGroup and E.private.actionbar.lbf.enable then
 		self.MSQGroup:ReSkin()
 	end
+
+	self:UpdateFadeBar(bar)
 end
 
 function AB:AdjustMaxStanceButtons(event)
@@ -308,6 +307,7 @@ function AB:AdjustMaxStanceButtons(event)
 	end
 
 	RegisterStateDriver(bar, "visibility", (numButtons == 0 and "hide") or visibility)
+	self:UpdateFadeBar(bar)
 end
 
 function AB:UpdateStanceBindings()

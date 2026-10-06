@@ -24,9 +24,7 @@ local MICRO_BUTTONS = {
 }
 
 local function onEnter(button)
-	if AB.db.microbar.mouseover then
-		E:UIFrameFadeIn(ElvUI_MicroBar, 0.2, ElvUI_MicroBar:GetAlpha(), AB.db.microbar.alpha)
-	end
+	AB:FadeBar_OnEnter(ElvUI_MicroBar)
 
 	if button and button ~= ElvUI_MicroBar and button.backdrop then
 		button.backdrop:SetBackdropBorderColor(unpack(E.media.rgbvaluecolor))
@@ -34,9 +32,7 @@ local function onEnter(button)
 end
 
 local function onLeave(button)
-	if AB.db.microbar.mouseover then
-		E:UIFrameFadeOut(ElvUI_MicroBar, 0.2, ElvUI_MicroBar:GetAlpha(), 0)
-	end
+	AB:FadeBar_OnLeave(ElvUI_MicroBar)
 
 	if button and button ~= ElvUI_MicroBar and button.backdrop then
 		button.backdrop:SetBackdropBorderColor(unpack(E.media.bordercolor))
@@ -126,11 +122,9 @@ function AB:UpdateMicroPositionDimensions()
 		prevButton = button
 	end
 
-	if AB.db.microbar.mouseover and not ElvUI_MicroBar:IsMouseOver() then
-		ElvUI_MicroBar:SetAlpha(0)
-	else
-		ElvUI_MicroBar:SetAlpha(self.db.microbar.alpha)
-	end
+	ElvUI_MicroBar.db = self.db.microbar
+	ElvUI_MicroBar.mouseover = self.db.microbar.mouseover
+	self:UpdateFadeBar(ElvUI_MicroBar)
 
 	AB.MicroWidth = (((CharacterMicroButton:GetWidth() + spacing) * self.db.microbar.buttonsPerRow) - spacing) + (offset * 2)
 	AB.MicroHeight = (((CharacterMicroButton:GetHeight() + spacing) * numRows) - spacing) + (offset * 2)
@@ -154,6 +148,9 @@ function AB:SetupMicroBar()
 	microBar:EnableMouse(true)
 	microBar:SetScript("OnEnter", onEnter)
 	microBar:SetScript("OnLeave", onLeave)
+	microBar.db = self.db.microbar
+	microBar:SetParent(self.fadeParent)
+	self:RegisterFadeBar("microbar", microBar)
 
 	microBar.visibility = CreateFrame("Frame", nil, E.UIParent, "SecureHandlerStateTemplate")
 	microBar.visibility:SetScript("OnShow", function() microBar:Show() end)

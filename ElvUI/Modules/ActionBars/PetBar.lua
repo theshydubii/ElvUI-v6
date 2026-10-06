@@ -165,11 +165,8 @@ function AB:PositionAndSizeBarPet()
 		bar:SetAlpha(bar.db.alpha)
 	end
 
-	if self.db.barPet.inheritGlobalFade then
-		bar:SetParent(self.fadeParent)
-	else
-		bar:SetParent(E.UIParent)
-	end
+	bar:SetParent(self.fadeParent)
+	self:RegisterFadeBar("barPet", bar)
 
 	local button, lastButton, lastColumnButton, autoCast, shine
 	local firstButtonSpacing = (self.db.barPet.backdrop == true and (E.Border + backdropSpacing) or E.Spacing)
@@ -236,6 +233,7 @@ function AB:PositionAndSizeBarPet()
 	end
 
 	RegisterStateDriver(bar, "show", visibility)
+	self:UpdateFadeBar(bar)
 
 	--Fix issue with mover not updating size when bar is hidden
 	bar:GetScript("OnSizeChanged")(bar)

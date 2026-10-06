@@ -16,6 +16,7 @@ local BankFrameItemButton_UpdateLocked = BankFrameItemButton_UpdateLocked
 local CloseBag, CloseBackpack, CloseBankFrame = CloseBag, CloseBackpack, CloseBankFrame
 local CooldownFrame_SetTimer = CooldownFrame_SetTimer
 local CreateFrame = CreateFrame
+local hooksecurefunc = hooksecurefunc
 local DeleteCursorItem = DeleteCursorItem
 local GameTooltip_Hide = GameTooltip_Hide
 local GetBackpackCurrencyInfo = GetBackpackCurrencyInfo
@@ -1312,11 +1313,25 @@ function B:VendorGrayCheck()
 	end
 end
 
+function B:UpdateContainerBackdropAlpha(frame, isBank)
+	if not frame then return end
+
+	local r, g, b = unpack(E.media.backdropfadecolor)
+	frame:SetBackdropColor(r, g, b, E.db.bags[isBank and "bankBackgroundAlpha" or "bagBackgroundAlpha"])
+end
+
+function B:UpdateContainerBackdropColors()
+	self:UpdateContainerBackdropAlpha(self.BagFrame, false)
+	self:UpdateContainerBackdropAlpha(self.BankFrame, true)
+end
+
 function B:ContructContainerFrame(name, isBank)
 	local strata = E.db.bags.strata or "DIALOG"
 
 	local f = CreateFrame("Button", name, E.UIParent)
 	f:SetTemplate("Transparent")
+	f.ignoreBackdropColors = true
+	B:UpdateContainerBackdropAlpha(f, isBank)
 	f:SetFrameStrata(strata)
 	f:RegisterEvent("BAG_UPDATE") -- Has to be on both frames
 	f:RegisterEvent("BAG_UPDATE_COOLDOWN") -- Has to be on both frames
@@ -2062,6 +2077,9 @@ function B:Initialize()
 
 	--Create Bag Frame
 	B.BagFrame = B:ContructContainerFrame("ElvUI_ContainerFrame")
+	hooksecurefunc(E, "UpdateBackdropColors", function()
+		B:UpdateContainerBackdropColors()
+	end)
 
 	--Hook onto Blizzard Functions
 	B:SecureHook("OpenAllBags", "ToggleBackpack")

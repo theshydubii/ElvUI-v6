@@ -160,15 +160,11 @@ function AB:MultiCastFlyoutFrame_ToggleFlyout(frame, type, parent)
 end
 
 function AB:TotemOnEnter()
-	if bar.mouseover then
-		E:UIFrameFadeIn(bar, 0.2, bar:GetAlpha(), AB.db.barTotem.alpha)
-	end
+	AB:FadeBar_OnEnter(bar)
 end
 
 function AB:TotemOnLeave()
-	if bar.mouseover then
-		E:UIFrameFadeOut(bar, 0.2, bar:GetAlpha(), 0)
-	end
+	AB:FadeBar_OnLeave(bar)
 end
 
 function AB:ShowMultiCastActionBar()
@@ -191,6 +187,8 @@ function AB:PositionAndSizeBarTotem()
 	bar:Height(size + 2)
 	MultiCastActionBarFrame:Height(size + 2)
 	bar.db = self.db.barTotem
+	bar:SetParent(self.fadeParent)
+	self:RegisterFadeBar("barTotem", bar)
 
 	bar.mouseover = self.db.barTotem.mouseover
 	if bar.mouseover then
@@ -229,6 +227,7 @@ function AB:PositionAndSizeBarTotem()
 
 	MultiCastFlyoutFrameCloseButton:Width(size)
 	MultiCastFlyoutFrameOpenButton:Width(size)
+	self:UpdateFadeBar(bar)
 end
 
 function AB:UpdateTotemBindings()
