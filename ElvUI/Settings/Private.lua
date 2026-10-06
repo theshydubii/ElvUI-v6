@@ -95,6 +95,7 @@ V.skins = {
 		quest = true,
 		raid = true,
 		socket = true,
+		socketScale = 1,
 		spellbook = true,
 		stable = true,
 		tabard = true,

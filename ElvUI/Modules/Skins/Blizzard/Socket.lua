@@ -87,4 +87,6 @@ S:AddCallbackForAddon("Blizzard_ItemSocketingUI", "Skin_Blizzard_ItemSocketingUI
 			self:Width(321)
 		end
 	end)
+
+	ItemSocketingFrame:SetScale(E.private.skins.blizzard.socketScale)
 end)

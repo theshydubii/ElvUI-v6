@@ -233,6 +233,21 @@ E.Options.args.skins = {
 					name = L["Socket Frame"],
 					desc = L["TOGGLESKIN_DESC"]
 				},
+				socketScale = {
+					type = "range",
+					name = L["Socket Frame Scale"],
+					desc = L["Adjust the scale of the item socketing frame."],
+					min = 0.5, max = 1.5, step = 0.05,
+					isPercent = true,
+					get = function() return E.private.skins.blizzard.socketScale end,
+					set = function(_, value)
+						E.private.skins.blizzard.socketScale = value
+						if ItemSocketingFrame and E.private.skins.blizzard.enable and E.private.skins.blizzard.socket then
+							ItemSocketingFrame:SetScale(value)
+						end
+					end,
+					disabled = function() return not E.private.skins.blizzard.enable or not E.private.skins.blizzard.socket end
+				},
 				spellbook = {
 					type = "toggle",
 					name = L["SPELLBOOK"],
