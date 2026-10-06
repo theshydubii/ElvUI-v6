@@ -40,12 +40,15 @@ local gameSettingsScaleOptions = {
 	{frame = "MacOptionsFrame", key = "macOptions", name = "Mac Options", group = "gameMenu"},
 	{frame = "KeyBindingFrame", key = "keybindings", name = "Key Bindings", group = "gameMenu"},
 	{frame = "MacroFrame", key = "macros", name = "Macros", group = "gameMenu"},
+	{frame = "AuctionFrame", key = "auctionHouse", name = "Auction House", group = "gameMenu"},
 	{frame = "PlayerTalentFrame", key = "talents", name = "Talents", group = "characters"},
 	{frame = "AchievementFrame", key = "achievements", name = "Achievements", group = "characters"},
 	{frame = "CharacterFrame", key = "characterInfo", name = "Character Info", group = "characters"},
 	{frame = "SpellBookFrame", key = "spellBook", name = "Spell Book", group = "characters"},
 	{frame = "InspectFrame", key = "inspect", name = "Inspect", group = "characters"},
 	{frame = "DressUpFrame", key = "dressingRoom", name = "Dressing Room", group = "characters"},
+	{frame = "TradeFrame", key = "trade", name = "Trade", group = "characters"},
+	{frame = "TradeSkillFrame", key = "professions", name = "Professions", group = "characters"},
 	{frame = "FriendsFrame", key = "social", name = "Social", group = "characters"},
 	{frame = "PVPParentFrame", key = "pvp", name = "Player vs. Player", group = "characters"},
 	{frame = "LFDParentFrame", key = "groupFinder", name = "Group Finder", group = "characters"}
@@ -69,6 +72,7 @@ gameSettingsScaleByFrame.PVPFrame = gameSettingsScaleByFrame.PVPParentFrame
 gameSettingsScaleByFrame.PVPTeamDetails = gameSettingsScaleByFrame.PVPParentFrame
 gameSettingsScaleByFrame.BattlefieldFrame = gameSettingsScaleByFrame.PVPParentFrame
 gameSettingsScaleByFrame.LFRParentFrame = gameSettingsScaleByFrame.LFDParentFrame
+gameSettingsScaleByFrame.CraftFrame = gameSettingsScaleByFrame.TradeSkillFrame
 
 local function GetGameMenuScale()
 	local settings = AddOn.db and AddOn.db.general
@@ -117,8 +121,11 @@ local function UpdateUIPanelScaleWidth(frame, scale)
 	local scaledWidth = baseWidth * scale
 	if currentWidth ~= scaledWidth and frame:CanChangeAttribute() then
 		frame:SetAttribute(attribute, scaledWidth)
+		currentWidth = scaledWidth
+	end
+
+	if currentWidth == scaledWidth then
 		frame.ElvUIScaledUIPanelWidth = scaledWidth
-		UpdateUIPanelPositions(frame)
 	end
 end
 
@@ -146,14 +153,21 @@ local function ScaleGameSettingsFrame(frame)
 
 		frame:SetScale(scale)
 		local scaledFrameName = frame:GetName()
+		local updatePanelPositions
 		if scaledFrameName == "InspectFrame" or scaledFrameName == "DressUpFrame" then
 			local area = scaledFrameName == "InspectFrame" and "left" or "right"
 			if frame:GetAttribute("UIPanelLayout-area") ~= area and frame:CanChangeAttribute() then
 				frame:SetAttribute("UIPanelLayout-area", area)
-				UpdateUIPanelPositions(frame)
+				updatePanelPositions = true
 			end
 		end
 		UpdateUIPanelScaleWidth(frame, scale)
+		if frame.GetAttribute and UpdateUIPanelPositions and type(frame:GetAttribute("UIPanelLayout-width")) == "number" and frame:CanChangeAttribute() then
+			updatePanelPositions = true
+		end
+		if updatePanelPositions then
+			UpdateUIPanelPositions(frame)
+		end
 		UpdateGameTooltipScale()
 	end
 end
@@ -162,6 +176,7 @@ function AddOn:UpdateGameSettingsScale()
 	for frameName in pairs(gameSettingsFrameNames) do
 		ScaleGameSettingsFrame(_G[frameName])
 	end
+	ScaleGameSettingsFrame(_G.CraftFrame)
 	ScaleGameSettingsFrame(_G.PVPTeamDetails)
 end
 
