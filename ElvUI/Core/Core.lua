@@ -819,7 +819,7 @@ do
 
 			if IsVersionNewer(message, E.version) then
 				if not E.recievedOutOfDateMessage then
-					local updateMessage = gsub(L["ElvUI is out of date. You can download the newest version from https://github.com/ElvUI-WotLK/ElvUI"], "https://github.com/ElvUI%-WotLK/ElvUI", "https://github.com/theshydubii/ElvUI")
+					local updateMessage = gsub(L["ElvUI is out of date. You can download the newest version from https://github.com/theshydubii/ElvUI"], "https://github.com/ElvUI%-WotLK/ElvUI", "https://github.com/theshydubii/ElvUI")
 					E:Print(updateMessage)
 
 					local numericVersion, numericMessage = tonumber(E.version), tonumber(message)

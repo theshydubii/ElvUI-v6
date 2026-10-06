@@ -46,7 +46,7 @@ E.PopupDialogs.ELVUI_UPDATED_WHILE_RUNNING = {
 }
 
 E.PopupDialogs.ELVUI_UPDATE_AVAILABLE = {
-	text = gsub(L["ElvUI is five or more revisions out of date. You can download the newest version from https://github.com/ElvUI-WotLK/ElvUI"], "https://github.com/ElvUI%-WotLK/ElvUI", DOWNLOAD_URL),
+	text = gsub(L["ElvUI is five or more revisions out of date. You can download the newest version from https://github.com/theshydubii/ElvUI"], "https://github.com/ElvUI%-WotLK/ElvUI", DOWNLOAD_URL),
 	hasEditBox = 1,
 	OnShow = function(self)
 		self.editBox:SetAutoFocus(false)

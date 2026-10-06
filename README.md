@@ -1,6 +1,5 @@
-[![Game Version](https://img.shields.io/badge/wow-3.3.5-blue.svg)](https://github.com/ElvUI-WotLK)
-[![Discord](https://discordapp.com/api/guilds/259362419372064778/widget.png?style=shield)](https://discord.gg/UXSc7nt)
-[![GitHub Actions](https://github.com/ElvUI-WotLK/ElvUI/workflows/lint/badge.svg?branch=master&event=push)](https://github.com/ElvUI-WotLK/ElvUI/actions?query=workflow%3Alint+branch%3Amaster)
+[![Game Version](https://img.shields.io/badge/wow-3.3.5-blue.svg)](https://github.com/theshydubii)
+[![GitHub Actions](https://github.com/theshydubii/ElvUI/workflows/lint/badge.svg?branch=master&event=push)](https://github.com/theshydubii/ElvUI/actions?query=workflow%3Alint+branch%3Amaster)
 
 # ElvUI - Wrath of the Lich King (3.3.5a)
 
@@ -37,44 +36,44 @@ This UI will arrange your interface to be more flexible and practical.
 
 ## Installation:
 
-1. Download **[Latest Version](https://github.com/ElvUI-WotLK/ElvUI/releases/latest)**
+1. Download **[Latest Version](https://github.com/theshydubii/ElvUI/releases/latest)**
 2. Unpack the Zip file
 3. Open the folder "ElvUI-(#.##)"
 4. Copy (or drag and drop) **ElvUI** and **ElvUI_OptionsUI** into your Wow-Directory\Interface\AddOns
 5. Restart WoW
 
 ## Plugins:
-[ElvUI_Enhanced](https://github.com/ElvUI-WotLK/ElvUI_Enhanced)
+[ElvUI_Enhanced](https://github.com/theshydubii/ElvUI_Enhanced)
 <br />
-[ElvUI_AddOnSkins](https://github.com/ElvUI-WotLK/ElvUI_AddOnSkins)
+[ElvUI_AddOnSkins](https://github.com/theshydubii/ElvUI_AddOnSkins)
 <br />
-[ElvUI_AuraBarsMovers](https://github.com/ElvUI-WotLK/ElvUI_AuraBarsMovers)
+[ElvUI_AuraBarsMovers](https://github.com/theshydubii/ElvUI_AuraBarsMovers)
 <br />
-[ElvUI_BagControl](https://github.com/ElvUI-WotLK/ElvUI_BagControl)
+[ElvUI_BagControl](https://github.com/theshydubii/ElvUI_BagControl)
 <br />
-[ElvUI_CastBarOverlay](https://github.com/ElvUI-WotLK/ElvUI_CastBarOverlay)
+[ElvUI_CastBarOverlay](https://github.com/theshydubii/ElvUI_CastBarOverlay)
 <br />
-[ElvUI_CustomTags](https://github.com/ElvUI-WotLK/ElvUI_CustomTags)
+[ElvUI_CustomTags](https://github.com/theshydubii/ElvUI_CustomTags)
 <br />
-[ElvUI_CustomTweaks](https://github.com/ElvUI-WotLK/ElvUI_CustomTweaks)
+[ElvUI_CustomTweaks](https://github.com/theshydubii/ElvUI_CustomTweaks)
 <br />
-[ElvUI_DTBars2](https://github.com/ElvUI-WotLK/ElvUI_DTBars2)
+[ElvUI_DTBars2](https://github.com/theshydubii/ElvUI_DTBars2)
 <br />
-[ElvUI_DataTextColors](https://github.com/ElvUI-WotLK/ElvUI_DataTextColors)
+[ElvUI_DataTextColors](https://github.com/theshydubii/ElvUI_DataTextColors)
 <br />
-[ElvUI_EnhancedFriendsList](https://github.com/ElvUI-WotLK/ElvUI_EnhancedFriendsList)
+[ElvUI_EnhancedFriendsList](https://github.com/theshydubii/ElvUI_EnhancedFriendsList)
 <br />
-[ElvUI_ExtraActionBars](https://github.com/ElvUI-WotLK/ElvUI_ExtraActionBars)
+[ElvUI_ExtraActionBars](https://github.com/theshydubii/ElvUI_ExtraActionBars)
 <br />
-[ElvUI_LocPlus](https://github.com/ElvUI-WotLK/ElvUI_LocPlus)
+[ElvUI_LocPlus](https://github.com/theshydubii/ElvUI_LocPlus)
 <br />
-[ElvUI_MicrobarEnhancement](https://github.com/ElvUI-WotLK/ElvUI_MicrobarEnhancement)
+[ElvUI_MicrobarEnhancement](https://github.com/theshydubii/ElvUI_MicrobarEnhancement)
 <br />
-[ElvUI_RaidMarkers](https://github.com/ElvUI-WotLK/ElvUI_RaidMarkers)
+[ElvUI_RaidMarkers](https://github.com/theshydubii/ElvUI_RaidMarkers)
 <br />
-[ElvUI_SwingBar](https://github.com/ElvUI-WotLK/ElvUI_SwingBar)
+[ElvUI_SwingBar](https://github.com/theshydubii/ElvUI_SwingBar)
 <br />
-[ElvUI_VisualProcs](https://github.com/ElvUI-WotLK/ElvUI_VisualProcs)
+[ElvUI_VisualProcs](https://github.com/theshydubii/ElvUI_VisualProcs)
 <br />
 
 -- Please Note: These plugins will not function without ElvUI installed.
@@ -132,7 +131,7 @@ ElvUI supports and contains language specific code for the following gameclients
 ## FAQ:
 
 ### I would like to report a bug. What i need to do?
-Make sure you're using the latest version of [ElvUI](https://github.com/ElvUI-WotLK/ElvUI/releases/latest)
+Make sure you're using the latest version of [ElvUI](https://github.com/theshydubii/ElvUI/releases/latest)
 <br />
 Describe your issue in as much detail as possible.
 <br />
@@ -147,12 +146,12 @@ The more info you provide, the better and faster support you will receive.
 ### I would like to request a feature. Where do I go?
 This repository has been created to reproduce the original ElvUI functions.
 <br />
-If you want to request a feature, post in the [ElvUI_Enhanced](https://github.com/ElvUI-WotLK/ElvUI_Enhanced/issues)
+If you want to request a feature, post in the [ElvUI_Enhanced](https://github.com/theshydubii/ElvUI_Enhanced/issues)
 <br />
-If you want to request for a change to an existing **ElvUI** function, post in the [ElvUI_CustomTweaks](https://github.com/ElvUI-WotLK/ElvUI_CustomTweaks/issues)
+If you want to request for a change to an existing **ElvUI** function, post in the [ElvUI_CustomTweaks](https://github.com/theshydubii/ElvUI_CustomTweaks/issues)
 
 ### I have a suggestion/problem with ElvUI_"PluginName". Where do I go?
-Create an issue at the bug tracker of [ElvUI](https://github.com/ElvUI-WotLK)_"PluginName" repository.
+Create an issue at the bug tracker of [ElvUI](https://github.com/theshydubii)_"PluginName" repository.
 
 ### ElvUI conflicting with "AddonName".
 Make sure you're using the latest available version of "AddonName" for WotLK before creating a ticket about it.
@@ -164,7 +163,7 @@ The only purpose of ElvUI-WotLK is to improve the backported version of ElvUI an
 ## FAQ RU:
 
 ### Я хочу сообщить о баге. Что мне нужно делать?
-Убедитесь что вы используете последнюю версию [ElvUI](https://github.com/ElvUI-WotLK/ElvUI/releases/latest)
+Убедитесь что вы используете последнюю версию [ElvUI](https://github.com/theshydubii/ElvUI/releases/latest)
 <br />
 Детально опишите свою проблему.
 <br />
@@ -179,12 +178,12 @@ The only purpose of ElvUI-WotLK is to improve the backported version of ElvUI an
 ### Я хотел бы попросить о добавлении возможности в ElvUI. Где написать?
 Данный репозиторий создан с целью воспроизведения оригинального функционал ElvUI.
 <br />
-Запросы на добавление нового функционала рассматриваются в репозитории [ElvUI_Enhanced](https://github.com/ElvUI-WotLK/ElvUI_Enhanced/issues)
+Запросы на добавление нового функционала рассматриваются в репозитории [ElvUI_Enhanced](https://github.com/theshydubii/ElvUI_Enhanced/issues)
 <br />
-Запросы на изменение существующего функционала **ElvUI** рассматриваются в репозитории [ElvUI_CustomTweaks](https://github.com/ElvUI-WotLK/ElvUI_CustomTweaks/issues)
+Запросы на изменение существующего функционала **ElvUI** рассматриваются в репозитории [ElvUI_CustomTweaks](https://github.com/theshydubii/ElvUI_CustomTweaks/issues)
 
 ### У меня проблема с ElvUI_"ИмяПлагина". Где написать?
-Создайте запрос в репозитории баг-трекере [ElvUI](https://github.com/ElvUI-WotLK)_"ИмяПлагина".
+Создайте запрос в репозитории баг-трекере [ElvUI](https://github.com/theshydubii)_"ИмяПлагина".
 
 ### ElvUI конфликтует с "ИмяАддона".
 Убедитесь, что вы используете последнюю доступную версию "ИмяАддона" для WotLK, перед тем как создать тикет о конфликте.
@@ -196,7 +195,7 @@ The only purpose of ElvUI-WotLK is to improve the backported version of ElvUI an
 ## FAQ  中文:
 
 ### 我想要报告一个问题，我需要做什么？
-确保你正在使用的是最新版本的[ElvUI]。(https://github.com/ElvUI-WotLK/ElvUI/releases/latest)
+确保你正在使用的是最新版本的[ElvUI]。(https://github.com/theshydubii/ElvUI/releases/latest)
 <br />
 请尽可能清楚的描述你所遇到的问题。
 <br />
@@ -211,12 +210,12 @@ The only purpose of ElvUI-WotLK is to improve the backported version of ElvUI an
 ### 我想要你们为ELvUI增加一个功能，我应该怎么做？
 本资料库的创建是为了复制源生的**ElvUI**功能。
 <br />
-如果你想要请求一个新的功能，将你的请求发布在[ElvUI_Enhanced](https://github.com/ElvUI-WotLK/ElvUI_Enhanced/issues)
+如果你想要请求一个新的功能，将你的请求发布在[ElvUI_Enhanced](https://github.com/theshydubii/ElvUI_Enhanced/issues)
 <br />
-如果你想要请求对现有**ElvUI**的功能进行修改，那么将你的请求发布在[ElvUI_CustomTweaks](https://github.com/ElvUI-WotLK/ElvUI_CustomTweaks/issues)
+如果你想要请求对现有**ElvUI**的功能进行修改，那么将你的请求发布在[ElvUI_CustomTweaks](https://github.com/theshydubii/ElvUI_CustomTweaks/issues)
 
 ### 我对现有的ElvUI_"插件名称"有一些建议/问题，我应该怎么做？
-在[ElvUI](https://github.com/ElvUI-WotLK)中“插件名称”资料库中的问题跟踪器中创建一个问题。
+在[ElvUI](https://github.com/theshydubii)中“插件名称”资料库中的问题跟踪器中创建一个问题。
 
 ### ElvUI跟“插件名称”有冲突。
 在提交表单之前确保你使用的是适用在魔兽世界·巫妖王之怒中的最新版本的“插件名称”。
